@@ -6,7 +6,7 @@
     <title>صدقة جارية | زكريا أحمد محمد حسن</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -15,7 +15,6 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        'reem': ['Reem Kufi', 'sans-serif'],
                         'cairo': ['Cairo', 'sans-serif'],
                         'amiri': ['Amiri', 'serif'],
                     },
@@ -24,14 +23,6 @@
                             light: '#f1c40f',
                             DEFAULT: '#d4af37',
                             dark: '#b8860b',
-                        },
-                        islamic: {
-                            50: '#f0f9f4',
-                            100: '#e0f2e9',
-                            600: '#065f46',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b',
                         }
                     }
                 }
@@ -40,403 +31,312 @@
     </script>
 
     <style>
-        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; background-color: #f8fafc; }
-        .quran-font { font-family: 'Amiri', serif; line-height: 2; }
+        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
+        .quran-font { font-family: 'Amiri', serif; line-height: 2.2; }
+        
         .gold-text {
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: #d4af37;
         }
 
-        .nav-card { transition: all 0.3s ease; cursor: pointer; border: 1px solid transparent; }
-        .nav-card.active { 
-            background: #065f46; 
-            color: white !important; 
-            border-color: #d4af37;
-            transform: translateY(-5px);
-        }
-        
         .section-content { display: none; }
-        .section-content.active { display: block; animation: fadeIn 0.6s ease; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .section-content.active { display: block; animation: fadeIn 0.3s ease-in; }
 
-        .player-gradient {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-            border: 1px solid #d4af37;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .nav-card.active {
+            background: #d4af37;
+            color: white !important;
         }
 
         .share-toast {
             position: fixed;
-            bottom: 40px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1e293b;
-            color: #d4af37;
-            padding: 12px 28px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 100;
             display: none;
-            z-index: 2000;
-            border: 1px solid #d4af37;
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
     </style>
 </head>
-<body class="text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- Share Notification -->
-    <div id="shareToast" class="share-toast font-bold">✅ تم نسخ الرابط بنجاح</div>
+    <!-- Toast Notification -->
+    <div id="shareToast" class="share-toast bg-slate-800 px-6 py-3 rounded-xl text-white font-bold shadow-2xl">
+        ✅ تم نسخ رابط الصدقة
+    </div>
 
     <!-- Header -->
-    <header class="pt-12 pb-16 text-center px-4 bg-white dark:bg-slate-900 shadow-sm border-b border-gold/20">
-        <div class="container mx-auto">
-            <span class="inline-block px-4 py-1 rounded-full bg-islamic-100 text-islamic-700 text-sm font-bold mb-4 border border-gold/30">صدقة جارية</span>
-            <h1 class="text-4xl md:text-6xl font-bold font-reem mb-6 gold-text">
-                زكريا أحمد محمد حسن
-            </h1>
-            <p class="text-islamic-800 dark:text-islamic-400 quran-font text-2xl max-w-2xl mx-auto opacity-90">
-                "وَبَشِّرِ الصَّابِرِينَ الَّذِينَ إِذَا أَصَابَتْهُم مُّصِيبَةٌ قَالُواْ إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ"
-            </p>
+    <header class="py-8 text-center border-b border-slate-100 dark:border-slate-800">
+        <h1 class="text-3xl font-bold gold-text mb-2">زكريا أحمد محمد حسن</h1>
+        <p class="text-slate-500 dark:text-slate-400">اللهم اغفر له وارحمه واجعل قبره روضة من رياض الجنة</p>
+        
+        <div class="flex justify-center gap-4 mt-6">
+            <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-gold">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+            <button onclick="shareApp()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-gold">
+                <i class="fas fa-share-alt"></i>
+            </button>
         </div>
     </header>
 
     <!-- Navigation -->
-    <nav class="container mx-auto px-4 -mt-8 mb-12 sticky top-4 z-50">
-        <div class="flex flex-wrap justify-center gap-3 max-w-5xl mx-auto">
-            <div onclick="switchSection('azkar')" id="btn-azkar" class="nav-card active glass-card px-6 py-4 rounded-2xl shadow-md flex items-center gap-3">
-                <i class="fas fa-hand-holding-heart text-gold"></i>
-                <span class="font-bold text-sm">أدعية وأذكار</span>
-            </div>
-            <div onclick="switchSection('listen')" id="btn-listen" class="nav-card glass-card px-6 py-4 rounded-2xl shadow-md flex items-center gap-3">
-                <i class="fas fa-volume-up text-gold"></i>
-                <span class="font-bold text-sm">تلاوات قرآنية</span>
-            </div>
-            <div onclick="switchSection('rosary')" id="btn-rosary" class="nav-card glass-card px-6 py-4 rounded-2xl shadow-md flex items-center gap-3">
-                <i class="fas fa-beads text-gold"></i>
-                <span class="font-bold text-sm">المسبحة</span>
-            </div>
-            <div onclick="switchSection('read')" id="btn-read" class="nav-card glass-card px-6 py-4 rounded-2xl shadow-md flex items-center gap-3">
-                <i class="fas fa-quran text-gold"></i>
-                <span class="font-bold text-sm">قراءة المصحف</span>
-            </div>
+    <nav class="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800">
+        <div class="container mx-auto px-4 flex justify-center py-3 gap-1 overflow-x-auto whitespace-nowrap">
+            <button onclick="switchTab('quran')" id="tab-quran" class="nav-card active px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
+                <i class="fas fa-quran ml-1"></i> القرآن
+            </button>
+            <button onclick="switchTab('audio')" id="tab-audio" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
+                <i class="fas fa-volume-up ml-1"></i> استماع
+            </button>
+            <button onclick="switchTab('azkar')" id="tab-azkar" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
+                <i class="fas fa-pray ml-1"></i> الأذكار
+            </button>
+            <button onclick="switchTab('rosary')" id="tab-rosary" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
+                <i class="fas fa-beads ml-1"></i> مسبحة
+            </button>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 pb-24">
-        
-        <!-- Azkar & Dua Section -->
-        <section id="azkar" class="section-content active">
-            <div class="max-w-4xl mx-auto">
-                <div class="flex gap-2 mb-8 overflow-x-auto pb-2 justify-center">
-                    <button onclick="loadAzkar('morning', this)" class="azkar-tab px-8 py-3 rounded-xl bg-islamic-700 text-white font-bold border border-gold/30">أذكار الصباح</button>
-                    <button onclick="loadAzkar('evening', this)" class="azkar-tab px-8 py-3 rounded-xl bg-white dark:bg-slate-800 font-bold border border-slate-200">أذكار المساء</button>
-                    <button onclick="loadAzkar('dua', this)" class="azkar-tab px-8 py-3 rounded-xl bg-white dark:bg-slate-800 font-bold border border-slate-200">دعاء للمتوفى</button>
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+
+        <!-- Quran Reading -->
+        <section id="quran" class="section-content active">
+            <div id="surahGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <!-- Surahs generated via JS -->
+            </div>
+            <div id="quranReader" class="hidden">
+                <button onclick="closeReader()" class="mb-6 text-gold font-bold">
+                    <i class="fas fa-arrow-right ml-2"></i> عودة للقائمة
+                </button>
+                <div class="bg-slate-50 dark:bg-slate-900 p-6 md:p-10 rounded-2xl">
+                    <h3 id="surahTitleDisplay" class="text-2xl text-center gold-text mb-8"></h3>
+                    <div id="ayahContainer" class="quran-font text-3xl text-right leading-[2.5]"></div>
                 </div>
-                <div id="azkarContainer" class="grid gap-4"></div>
             </div>
         </section>
 
-        <!-- Audio Player Section -->
-        <section id="listen" class="section-content">
-            <div class="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
-                <div class="flex-grow player-gradient rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[400px]">
-                    <div class="text-center">
-                        <h3 id="curSurah" class="text-4xl quran-font font-bold mb-3 text-gold-light">سورة الفاتحة</h3>
-                        <p id="curReciter" class="text-emerald-50 opacity-80 text-lg">عبد الباسط عبد الصمد</p>
+        <!-- Audio Player -->
+        <section id="audio" class="section-content">
+            <div class="max-w-2xl mx-auto bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 md:p-10">
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-400 mb-2">القارئ</label>
+                        <select id="reciterSelect" onchange="changeReciter()" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-gold">
+                        </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-400 mb-2">السورة</label>
+                        <select id="audioSurahSelect" onchange="loadAudio()" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-gold">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-center py-8">
+                    <div id="nowPlayingSurah" class="text-2xl font-bold gold-text mb-1">اختر سورة</div>
+                    <div id="nowPlayingReciter" class="text-slate-500 mb-8">للاستماع</div>
                     
-                    <div class="mt-auto">
-                        <div class="flex justify-between text-xs mb-3 font-mono text-gold-light">
-                            <span id="currentTime">00:00</span>
-                            <span id="durationTime">00:00</span>
-                        </div>
-                        <input type="range" id="audioSeek" class="w-full h-1.5 mb-8 accent-gold cursor-pointer" value="0">
-                        <div class="flex justify-center items-center gap-10">
-                            <button id="mainPlayBtn" onclick="togglePlay()" class="w-24 h-24 bg-white text-islamic-900 rounded-full flex items-center justify-center text-4xl shadow-2xl transition-all hover:scale-105">
-                                <i class="fas fa-play ml-1"></i>
-                            </button>
+                    <div class="w-full mb-6">
+                        <input type="range" id="audioTimeline" class="w-full accent-gold h-1.5" value="0">
+                        <div class="flex justify-between text-xs text-slate-400 mt-2 font-mono">
+                            <span id="audioCurrent">00:00</span>
+                            <span id="audioTotal">00:00</span>
                         </div>
                     </div>
+
+                    <button onclick="togglePlay()" id="playBtn" class="w-20 h-20 rounded-full bg-gold text-white text-3xl shadow-lg hover:scale-105 transition-all">
+                        <i class="fas fa-play ml-1"></i>
+                    </button>
                     <audio id="audioEngine"></audio>
                 </div>
-
-                <div class="lg:w-80 glass-card rounded-[40px] p-8 shadow-xl border-gold/20 flex flex-col gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-islamic-800 mb-3">اختر القارئ</label>
-                        <select id="reciterDrop" onchange="updateReciterFromDrop()" class="w-full p-4 rounded-2xl border-2 bg-white outline-none focus:border-gold transition-colors font-bold"></select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-islamic-800 mb-3">اختر السورة</label>
-                        <select id="surahDrop" onchange="changeSurah()" class="w-full p-4 rounded-2xl border-2 bg-white outline-none focus:border-gold transition-colors font-bold"></select>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- Rosary Section -->
+        <!-- Azkar -->
+        <section id="azkar" class="section-content">
+            <div class="flex justify-center gap-2 mb-8 overflow-x-auto py-2">
+                <button id="btn-morning" onclick="loadAzkar('morning')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أذكار الصباح</button>
+                <button id="btn-evening" onclick="loadAzkar('evening')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أذكار المساء</button>
+                <button id="btn-dead" onclick="loadAzkar('dead')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أدعية للمتوفى</button>
+            </div>
+            <div id="azkarList" class="grid gap-3 max-w-3xl mx-auto"></div>
+        </section>
+
+        <!-- Rosary -->
         <section id="rosary" class="section-content">
-            <div class="max-w-md mx-auto text-center glass-card p-12 rounded-[50px] shadow-2xl border border-gold/20">
-                <p id="rosaryText" class="text-2xl quran-font text-islamic-800 mb-10">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</p>
-                <div class="relative w-56 h-56 mx-auto mb-12 flex items-center justify-center">
-                    <svg class="absolute inset-0 w-full h-full -rotate-90">
-                        <circle cx="112" cy="112" r="100" stroke="#f1f5f9" stroke-width="8" fill="transparent" />
-                        <circle id="rosaryCircle" cx="112" cy="112" r="100" stroke="#d4af37" stroke-width="10" fill="transparent" stroke-dasharray="628" stroke-dashoffset="628" stroke-linecap="round" />
-                    </svg>
-                    <span id="rosaryCount" class="text-7xl font-bold font-mono text-islamic-900">0</span>
-                </div>
-                <button onclick="tapRosary()" class="w-full py-8 bg-islamic-700 hover:bg-islamic-800 text-white rounded-3xl shadow-xl active:scale-95 transition-all text-2xl font-bold mb-6 border-b-4 border-islamic-900">اضغط للتسبيح</button>
-                <button onclick="resetRosary()" class="text-slate-400 hover:text-red-500 font-bold">إعادة ضبط</button>
+            <div class="max-w-sm mx-auto text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-3xl">
+                <select id="rosaryMode" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 mb-8 font-bold text-center">
+                    <option>سبحان الله</option>
+                    <option>الحمد لله</option>
+                    <option>الله أكبر</option>
+                    <option>استغفر الله</option>
+                </select>
+                
+                <div class="text-6xl font-bold gold-text mb-8 py-10" id="rosaryCount">0</div>
+
+                <button onclick="incrementRosary()" class="w-full py-8 bg-gold text-white rounded-2xl text-2xl font-bold shadow-lg active:scale-95 mb-4">
+                    تسبيح
+                </button>
+                <button onclick="resetRosary()" class="text-slate-400 text-sm">تصفير العداد</button>
             </div>
         </section>
 
-        <!-- Read Section -->
-        <section id="read" class="section-content">
-            <div id="surahIndex" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-            <div id="quranReader" class="hidden">
-                <div class="max-w-4xl mx-auto glass-card rounded-[40px] overflow-hidden shadow-2xl border border-gold/20">
-                    <div class="p-6 bg-islamic-800 text-white flex justify-between items-center border-b border-gold">
-                        <button onclick="closeQuran()" class="hover:text-gold"><i class="fas fa-arrow-right ml-2"></i>رجوع</button>
-                        <h4 id="readerTitle" class="font-reem text-xl font-bold"></h4>
-                        <div class="w-10"></div>
-                    </div>
-                    <div id="ayahsBox" class="p-10 text-right quran-font text-3xl leading-[2.5] bg-[#fffdf9] min-h-[500px]"></div>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <footer class="bg-white dark:bg-slate-900 border-t border-gold/20 py-16 text-center">
-        <div class="container mx-auto px-4">
-            <p class="quran-font text-3xl gold-text mb-4">اللهم تقبل هذا العمل واجعله نوراً لزكريا</p>
-            <p class="text-slate-500 mb-10 max-w-lg mx-auto leading-relaxed">ساهم في نشر هذا الرابط ليكون صدقة جارية مستمرة بإذن الله، الدال على الخير كفاعله.</p>
-            
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
-                <button onclick="shareApp()" class="w-full sm:w-64 py-4 bg-islamic-700 text-white rounded-2xl font-bold hover:bg-islamic-800 shadow-xl flex items-center justify-center gap-3 transition-transform hover:scale-105 border-b-4 border-islamic-900">
-                    <i class="fas fa-share-alt"></i> مشاركة الصدقة الجارية
-                </button>
-                <button onclick="copyOnlyLink()" class="w-full sm:w-64 py-4 bg-slate-100 text-slate-700 rounded-2xl font-bold hover:bg-slate-200 flex items-center justify-center gap-3 transition-transform hover:scale-105">
-                    <i class="fas fa-link"></i> نسخ الرابط فقط
-                </button>
-            </div>
-            
-            <div class="flex justify-center gap-6 text-slate-300">
-                <i class="fas fa-moon text-2xl"></i>
-                <i class="fas fa-star text-2xl"></i>
-                <i class="fas fa-heart text-2xl"></i>
-            </div>
-        </div>
+    <footer class="py-12 text-center text-slate-400 text-sm border-t border-slate-100 dark:border-slate-800 mt-10">
+        <p>صدقة جارية عن روح زكريا أحمد محمد حسن</p>
     </footer>
 
     <script>
-        // Fixed User Identity
-        const userData = {
-            name: "زكريا أحمد محمد حسن",
-            photo: ""
-        };
-
         const surahNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-        
+
         const reciters = [
-            { id: 'bs', name: 'عبد الباسط عبد الصمد', url: 'https://server7.mp3quran.net/basit/' },
-            { id: 'ar', name: 'مشاري العفاسي', url: 'https://server8.mp3quran.net/afs/' },
-            { id: 'ma', name: 'ماهر المعيقلي', url: 'https://server4.mp3quran.net/hlw/' },
-            { id: 'minsh', name: 'محمد صديق المنشاوي', url: 'https://server10.mp3quran.net/minsh/' },
-            { id: 'husr', name: 'محمود خليل الحصري', url: 'https://server13.mp3quran.net/husr/' },
-            { id: 'gham', name: 'سعد الغامدي', url: 'https://server7.mp3quran.net/gham/' },
-            { id: 'yasser', name: 'ياسر الدوسري', url: 'https://server11.mp3quran.net/yasser/' }
+            { name: "عبد الباسط عبد الصمد", server: "https://server7.mp3quran.net/basit/" },
+            { name: "مشاري العفاسي", server: "https://server8.mp3quran.net/afs/" },
+            { name: "ماهر المعيقلي", server: "https://server12.mp3quran.net/maher/" },
+            { name: "ياسر الدوسري", server: "https://server11.mp3quran.net/yasser/" },
+            { name: "محمد صديق المنشاوي", server: "https://server10.mp3quran.net/minsh/" }
         ];
 
-        function initPlatform() {
-            initAudio();
-            initQuran();
+        const azkarData = {
+            morning: [{t:"آية الكرسي",n:1},{t:"سورة الإخلاص والمعوذتين",n:3},{t:"أصبحنا وأصبح الملك لله",n:1},{t:"بسم الله الذي لا يضر مع اسمه شيء",n:3}],
+            evening: [{t:"آية الكرسي",n:1},{t:"سورة الإخلاص والمعوذتين",n:3},{t:"أمسينا وأمسى الملك لله",n:1},{t:"أعوذ بكلمات الله التامات",n:3}],
+            dead: [{t:"اللهم اغفر له وارحمه",n:1},{t:"اللهم اجعل قبره روضة من رياض الجنة",n:1},{t:"اللهم ثبته عند السؤال",n:1}]
+        };
+
+        function init() {
+            renderSurahGrid();
+            fillSelects();
             loadAzkar('morning');
+            document.getElementById('rosaryCount').innerText = localStorage.getItem('rosaryCount') || 0;
         }
 
-        // --- Sharing Logic (Corrected) ---
-        function copyToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                const toast = document.getElementById('shareToast');
-                toast.style.display = 'block';
-                setTimeout(() => toast.style.display = 'none', 3000);
-            } catch (err) {
-                console.error('Copy failed', err);
-            }
-            document.body.removeChild(textArea);
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            document.getElementById('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        function shareApp() {
-            const url = window.location.href.split('?')[0].split('#')[0];
-            const message = `صدقة جارية لروح الفقيد: ${userData.name}\n\nاللهم اجعلها في ميزان حسناته ونوراً له.\n\nيمكنك القراءة والاستماع عبر الرابط:\n${url}`;
-            copyToClipboard(message);
-        }
-
-        function copyOnlyLink() {
-            const url = window.location.href.split('?')[0].split('#')[0];
-            copyToClipboard(url);
-        }
-
-        // --- UI Navigation ---
-        function switchSection(id) {
+        function switchTab(id) {
             document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-card').forEach(n => n.classList.remove('active'));
-            document.getElementById(`btn-${id}`).classList.add('active');
-            window.scrollTo(0, 400);
+            document.getElementById(`tab-${id}`).classList.add('active');
         }
 
-        // --- Azkar Logic ---
-        function loadAzkar(type, btn) {
-            const cont = document.getElementById('azkarContainer');
-            if(btn) {
-                document.querySelectorAll('.azkar-tab').forEach(b => {
-                    b.classList.remove('bg-islamic-700', 'text-white', 'border-gold/30');
-                    b.classList.add('bg-white', 'text-slate-700');
-                });
-                btn.classList.add('bg-islamic-700', 'text-white', 'border-gold/30');
-            }
-            cont.innerHTML = "";
-            const data = {
-                morning: [
-                    {t:"آية الكرسي", c:1}, 
-                    {t:"أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له", c:1},
-                    {t:"رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً", c:3}
-                ],
-                evening: [
-                    {t:"أمسينا وأمسى الملك لله، والحمد لله", c:1},
-                    {t:"باسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء", c:3},
-                    {t:"أعوذ بكلمات الله التامات من شر ما خلق", c:3}
-                ],
-                dua: [
-                    {t:"اللهم اغفر له وارحمه وعافه واعف عنه وأكرم نزله ووسع مدخله", c:1},
-                    {t:"اللهم أبدله داراً خيراً من داره وأهلاً خيراً من أهله", c:1},
-                    {t:"اللهم اجعل قبره روضة من رياض الجنة ولا تجعله حفرة من حفر النار", c:1}
-                ]
-            };
-            data[type].forEach(a => {
-                cont.innerHTML += `
-                    <div class="glass-card p-6 rounded-2xl border-gold/10 flex justify-between items-center hover:border-gold/30 transition-all">
-                        <p class="text-xl quran-font text-islamic-900">${a.t}</p>
-                        <button onclick="updateCounter(this)" class="w-14 h-14 rounded-full border-2 border-gold text-gold font-bold shrink-0 ml-4 hover:bg-gold hover:text-white transition-all">${a.c}</button>
+        function renderSurahGrid() {
+            const grid = document.getElementById('surahGrid');
+            surahNames.forEach((name, i) => {
+                grid.innerHTML += `
+                    <div onclick="readSurah(${i+1}, '${name}')" class="bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-transparent hover:border-gold cursor-pointer text-center">
+                        <div class="text-xs text-slate-400 mb-1">${i+1}</div>
+                        <div class="font-bold text-sm">سورة ${name}</div>
                     </div>
                 `;
             });
         }
 
-        function updateCounter(btn) {
-            let v = parseInt(btn.innerText);
-            if(v > 1) btn.innerText = v - 1;
-            else {
-                btn.innerHTML = '<i class="fas fa-check"></i>';
-                btn.classList.add('bg-gold', 'text-white');
-            }
+        async function readSurah(id, name) {
+            document.getElementById('surahGrid').classList.add('hidden');
+            document.getElementById('quranReader').classList.remove('hidden');
+            document.getElementById('surahTitleDisplay').innerText = `سورة ${name}`;
+            const container = document.getElementById('ayahContainer');
+            container.innerHTML = "جاري التحميل...";
+            try {
+                const res = await fetch(`https://api.alquran.cloud/v1/surah/${id}`);
+                const data = await res.json();
+                container.innerHTML = data.data.ayahs.map(a => `${a.text} ﴿${a.numberInSurah}﴾ `).join(' ');
+            } catch (e) { container.innerHTML = "تعذر التحميل."; }
         }
 
-        // --- Rosary Logic ---
-        function tapRosary() {
-            const countEl = document.getElementById('rosaryCount');
-            const circle = document.getElementById('rosaryCircle');
-            let count = parseInt(countEl.innerText) + 1;
-            countEl.innerText = count;
-            circle.style.strokeDashoffset = 628 - ((count % 33) / 33 * 628);
-        }
-        function resetRosary() { 
-            document.getElementById('rosaryCount').innerText = "0"; 
-            document.getElementById('rosaryCircle').style.strokeDashoffset = 628; 
+        function closeReader() {
+            document.getElementById('quranReader').classList.add('hidden');
+            document.getElementById('surahGrid').classList.remove('hidden');
         }
 
-        // --- Audio Logic ---
-        const audio = document.getElementById('audioEngine');
-        let currentReciterObj = reciters[0];
-
-        function initAudio() {
-            const recDrop = document.getElementById('reciterDrop');
-            const surDrop = document.getElementById('surahDrop');
-            reciters.forEach((r, idx) => recDrop.innerHTML += `<option value="${idx}">${r.name}</option>`);
-            surahNames.forEach((n, i) => surDrop.innerHTML += `<option value="${(i+1).toString().padStart(3, '0')}">سورة ${n}</option>`);
-        }
-
-        function updateReciterFromDrop() { 
-            currentReciterObj = reciters[document.getElementById('reciterDrop').value]; 
-            if (audio.src) changeSurah(); 
-        }
-        
-        function changeSurah() {
-            const sid = document.getElementById('surahDrop').value;
-            audio.src = `${currentReciterObj.url}${sid}.mp3`;
-            document.getElementById('curSurah').innerText = `سورة ${surahNames[parseInt(sid)-1]}`;
-            document.getElementById('curReciter').innerText = currentReciterObj.name;
-            audio.play();
-            document.getElementById('mainPlayBtn').innerHTML = '<i class="fas fa-pause"></i>';
-        }
-
-        function togglePlay() {
-            if(!audio.src) { changeSurah(); return; }
-            if(audio.paused) { audio.play(); document.getElementById('mainPlayBtn').innerHTML = '<i class="fas fa-pause"></i>'; }
-            else { audio.pause(); document.getElementById('mainPlayBtn').innerHTML = '<i class="fas fa-play ml-1"></i>'; }
-        }
-
-        audio.ontimeupdate = () => {
-            if(!audio.duration) return;
-            document.getElementById('audioSeek').value = (audio.currentTime / audio.duration) * 100;
-            document.getElementById('currentTime').innerText = formatTime(audio.currentTime);
-            document.getElementById('durationTime').innerText = formatTime(audio.duration);
-        };
-        document.getElementById('audioSeek').oninput = function() {
-            if(audio.duration) audio.currentTime = (this.value / 100) * audio.duration;
-        };
-        function formatTime(secs) {
-            let m = Math.floor(secs / 60), s = Math.floor(secs % 60);
-            return m.toString().padStart(2, '0') + ":" + s.toString().padStart(2, '0');
-        }
-
-        // --- Quran Read Logic ---
-        function initQuran() {
-            const index = document.getElementById('surahIndex');
+        function fillSelects() {
+            const rSel = document.getElementById('reciterSelect');
+            const sSel = document.getElementById('audioSurahSelect');
+            reciters.forEach((r, i) => rSel.innerHTML += `<option value="${i}">${r.name}</option>`);
             surahNames.forEach((n, i) => {
-                index.innerHTML += `
-                    <div onclick="loadSurah(${i+1}, '${n}')" class="glass-card p-4 rounded-xl cursor-pointer border-gold/10 hover:border-gold transition-all text-center">
-                        <span class="block text-gold text-xs mb-1">${i+1}</span>
-                        <span class="font-bold quran-font text-lg">سورة ${n}</span>
-                    </div>`;
+                const val = (i+1).toString().padStart(3, '0');
+                sSel.innerHTML += `<option value="${val}">سورة ${n}</option>`;
             });
         }
 
-        async function loadSurah(id, name) {
-            document.getElementById('surahIndex').classList.add('hidden');
-            document.getElementById('quranReader').classList.remove('hidden');
-            document.getElementById('readerTitle').innerText = `سورة ${name}`;
-            const box = document.getElementById('ayahsBox');
-            box.innerHTML = `<div class="flex justify-center py-20"><i class="fas fa-spinner fa-spin text-3xl text-gold"></i></div>`;
-            try {
-                const res = await fetch(`https://api.alquran.cloud/v1/surah/${id}`);
-                const d = await res.json();
-                box.innerHTML = d.data.ayahs.map(a => `${a.text} <span class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gold/40 text-gold text-sm font-sans mx-2">${a.numberInSurah}</span>`).join(" ");
-            } catch (e) { box.innerHTML = "حدث خطأ أثناء تحميل السورة. يرجى المحاولة مرة أخرى."; }
+        const audio = document.getElementById('audioEngine');
+        function loadAudio() {
+            const r = reciters[document.getElementById('reciterSelect').value];
+            const s = document.getElementById('audioSurahSelect').value;
+            audio.src = `${r.server}${s}.mp3`;
+            document.getElementById('nowPlayingSurah').innerText = `سورة ${surahNames[parseInt(s)-1]}`;
+            document.getElementById('nowPlayingReciter').innerText = r.name;
+            audio.play();
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
         }
 
-        function closeQuran() { 
-            document.getElementById('quranReader').classList.add('hidden'); 
-            document.getElementById('surahIndex').classList.remove('hidden'); 
+        function togglePlay() {
+            if(!audio.src) { loadAudio(); return; }
+            if(audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>'; }
+            else { audio.pause(); document.getElementById('playBtn').innerHTML = '<i class="fas fa-play ml-1"></i>'; }
         }
 
-        window.onload = initPlatform;
+        function changeReciter() { if(audio.src) loadAudio(); }
+
+        audio.ontimeupdate = () => {
+            if(!audio.duration) return;
+            document.getElementById('audioTimeline').value = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('audioCurrent').innerText = formatTime(audio.currentTime);
+            document.getElementById('audioTotal').innerText = formatTime(audio.duration);
+        };
+
+        function formatTime(s) {
+            const m = Math.floor(s/60), sec = Math.floor(s%60);
+            return `${m}:${sec.toString().padStart(2,'0')}`;
+        }
+
+        function loadAzkar(cat) {
+            document.querySelectorAll('.azkar-nav').forEach(b => b.classList.replace('bg-gold','bg-slate-100'));
+            document.getElementById(`btn-${cat}`).classList.replace('bg-slate-100','bg-gold');
+            document.getElementById(`btn-${cat}`).classList.add('text-white');
+            
+            document.getElementById('azkarList').innerHTML = azkarData[cat].map(a => `
+                <div class="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl flex justify-between items-center">
+                    <p class="text-lg quran-font">${a.t}</p>
+                    <button onclick="countZikr(this)" class="w-10 h-10 rounded-full border border-gold text-gold font-bold shrink-0 ml-4">${a.n}</button>
+                </div>
+            `).join('');
+        }
+
+        function countZikr(btn) {
+            let n = parseInt(btn.innerText);
+            if(n > 1) btn.innerText = n - 1;
+            else { btn.innerHTML = '✓'; btn.classList.add('bg-gold','text-white'); }
+        }
+
+        function incrementRosary() {
+            let c = parseInt(document.getElementById('rosaryCount').innerText) + 1;
+            document.getElementById('rosaryCount').innerText = c;
+            localStorage.setItem('rosaryCount', c);
+        }
+
+        function resetRosary() {
+            document.getElementById('rosaryCount').innerText = 0;
+            localStorage.setItem('rosaryCount', 0);
+        }
+
+        function shareApp() {
+            const t = `صدقة جارية عن روح زكريا أحمد محمد حسن: ${window.location.href}`;
+            navigator.clipboard.writeText(t).then(() => {
+                const toast = document.getElementById('shareToast');
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2000);
+            });
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
