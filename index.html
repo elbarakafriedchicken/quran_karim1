@@ -2,341 +2,877 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صدقة جارية | زكريا أحمد محمد حسن</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مطعم البركة - المنيو الذكي</title>
     
+    <meta name="theme-color" content="#d32f2f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/bRzWVmPC/logo.jpg">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/bRzWVmPC/logo.jpg">
+
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Phosphor Icons (For modern UI icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Canvas Confetti for interactions -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        'cairo': ['Cairo', 'sans-serif'],
-                        'amiri': ['Amiri', 'serif'],
-                    },
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
                     colors: {
-                        gold: {
-                            light: '#f1c40f',
-                            DEFAULT: '#d4af37',
-                            dark: '#b8860b',
-                        }
+                        primary: '#d32f2f', // Main Red
+                        secondary: '#ffc107', // Yellow
+                        darkBg: '#121212',
+                        darkCard: '#1e1e1e'
                     }
                 }
             }
         }
     </script>
-
     <style>
-        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
-        .quran-font { font-family: 'Amiri', serif; line-height: 2.2; }
+        /* Custom Scrollbars & Utilities */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
         
-        .gold-text {
-            color: #d4af37;
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Glassmorphism effects */
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .dark .glass-nav { background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(10px); }
+        
+        /* Splash Screen BG */
+        .splash-bg {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.ibb.co/HTWhBfwz/Untitled-Project-7.jpg');
+            background-size: cover; background-position: center;
         }
 
-        .section-content { display: none; }
-        .section-content.active { display: block; animation: fadeIn 0.3s ease-in; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* Animations */
+        .fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; transform: translateY(15px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Drawer/Modal Transition */
+        .drawer-overlay { transition: opacity 0.3s ease; }
+        .drawer-content { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* New Impressive Styles */
+        .food-card-img { transition: transform 0.5s ease; }
+        .food-card:hover .food-card-img { transform: scale(1.08); }
+        .badge-glow { box-shadow: 0 0 10px rgba(255, 193, 7, 0.6); }
+        
+        /* Banner Slider */
+        .promo-banner {
+            background: linear-gradient(135deg, #d32f2f, #ff5252);
+            position: relative;
+            overflow: hidden;
         }
-
-        .nav-card.active {
-            background: #d4af37;
-            color: white !important;
+        .promo-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+            animation: rotateBg 15s linear infinite;
         }
-
-        .share-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: none;
-        }
+        @keyframes rotateBg { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
+<body class="bg-gray-50 text-gray-800 dark:bg-darkBg dark:text-gray-200 antialiased transition-colors duration-300">
 
-    <!-- Toast Notification -->
-    <div id="shareToast" class="share-toast bg-slate-800 px-6 py-3 rounded-xl text-white font-bold shadow-2xl">
-        ✅ تم نسخ رابط الصدقة
+    <!-- 1. Splash / Home Screen -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] splash-bg flex flex-col items-center justify-center text-white transition-opacity duration-500">
+        <div class="animate-bounce mb-6">
+            <img src="https://i.ibb.co/bRzWVmPC/logo.jpg" class="w-32 h-32 rounded-full border-4 border-secondary object-cover shadow-2xl bg-white">
+        </div>
+        <h1 class="text-4xl font-bold mb-2 text-shadow-lg">مطعم البركة</h1>
+        <p class="text-gray-300 text-sm mb-8">📍 الخوض | الخوير</p>
+        
+        <div id="status-tag" class="bg-secondary text-black px-6 py-2 rounded-full font-bold text-sm mb-6 animate-pulse">
+            جاري تهيئة المنيو ⏳...
+        </div>
+        
+        <button id="start-btn" onclick="startApp()" disabled class="bg-primary hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-10 py-4 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(211,47,47,0.5)] transition-all transform active:scale-95 flex items-center gap-2">
+            <i class="ph ph-spinner-gap animate-spin text-xl hidden" id="loading-icon"></i>
+            <span id="start-text">يرجى الانتظار...</span>
+        </button>
     </div>
 
-    <!-- Header -->
-    <header class="py-8 text-center border-b border-slate-100 dark:border-slate-800">
-        <h1 class="text-3xl font-bold gold-text mb-2">زكريا أحمد محمد حسن</h1>
-        <p class="text-slate-500 dark:text-slate-400">اللهم اغفر له وارحمه واجعل قبره روضة من رياض الجنة</p>
+    <!-- 2. Main App Content (Hidden initially) -->
+    <div id="main-app" class="hidden pb-24">
         
-        <div class="flex justify-center gap-4 mt-6">
-            <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-gold">
-                <i id="themeIcon" class="fas fa-moon"></i>
-            </button>
-            <button onclick="shareApp()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-gold">
-                <i class="fas fa-share-alt"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800">
-        <div class="container mx-auto px-4 flex justify-center py-3 gap-1 overflow-x-auto whitespace-nowrap">
-            <button onclick="switchTab('quran')" id="tab-quran" class="nav-card active px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
-                <i class="fas fa-quran ml-1"></i> القرآن
-            </button>
-            <button onclick="switchTab('audio')" id="tab-audio" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
-                <i class="fas fa-volume-up ml-1"></i> استماع
-            </button>
-            <button onclick="switchTab('azkar')" id="tab-azkar" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
-                <i class="fas fa-pray ml-1"></i> الأذكار
-            </button>
-            <button onclick="switchTab('rosary')" id="tab-rosary" class="nav-card px-5 py-2 rounded-lg font-bold transition-all text-slate-600 dark:text-slate-400">
-                <i class="fas fa-beads ml-1"></i> مسبحة
-            </button>
-        </div>
-    </nav>
-
-    <main class="container mx-auto px-4 py-8 max-w-5xl">
-
-        <!-- Quran Reading -->
-        <section id="quran" class="section-content active">
-            <div id="surahGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                <!-- Surahs generated via JS -->
-            </div>
-            <div id="quranReader" class="hidden">
-                <button onclick="closeReader()" class="mb-6 text-gold font-bold">
-                    <i class="fas fa-arrow-right ml-2"></i> عودة للقائمة
-                </button>
-                <div class="bg-slate-50 dark:bg-slate-900 p-6 md:p-10 rounded-2xl">
-                    <h3 id="surahTitleDisplay" class="text-2xl text-center gold-text mb-8"></h3>
-                    <div id="ayahContainer" class="quran-font text-3xl text-right leading-[2.5]"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Audio Player -->
-        <section id="audio" class="section-content">
-            <div class="max-w-2xl mx-auto bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 md:p-10">
-                <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <!-- Header & Nav -->
+        <header class="sticky top-0 z-40 glass-nav border-b border-gray-200 dark:border-gray-800 shadow-sm">
+            <div class="px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <img src="https://i.ibb.co/bRzWVmPC/logo.jpg" class="w-10 h-10 rounded-full border-2 border-primary object-cover">
                     <div>
-                        <label class="block text-sm font-bold text-slate-400 mb-2">القارئ</label>
-                        <select id="reciterSelect" onchange="changeReciter()" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-gold">
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-400 mb-2">السورة</label>
-                        <select id="audioSurahSelect" onchange="loadAudio()" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-gold">
-                        </select>
+                        <h2 class="font-bold text-lg leading-tight dark:text-white">البركة</h2>
+                        <span class="text-[10px] text-primary font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">استلام فقط</span>
                     </div>
                 </div>
-
-                <div class="text-center py-8">
-                    <div id="nowPlayingSurah" class="text-2xl font-bold gold-text mb-1">اختر سورة</div>
-                    <div id="nowPlayingReciter" class="text-slate-500 mb-8">للاستماع</div>
-                    
-                    <div class="w-full mb-6">
-                        <input type="range" id="audioTimeline" class="w-full accent-gold h-1.5" value="0">
-                        <div class="flex justify-between text-xs text-slate-400 mt-2 font-mono">
-                            <span id="audioCurrent">00:00</span>
-                            <span id="audioTotal">00:00</span>
-                        </div>
-                    </div>
-
-                    <button onclick="togglePlay()" id="playBtn" class="w-20 h-20 rounded-full bg-gold text-white text-3xl shadow-lg hover:scale-105 transition-all">
-                        <i class="fas fa-play ml-1"></i>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleDarkMode()" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
+                        <i class="ph ph-moon text-xl dark:hidden"></i>
+                        <i class="ph ph-sun text-xl hidden dark:block"></i>
                     </button>
-                    <audio id="audioEngine"></audio>
                 </div>
             </div>
-        </section>
 
-        <!-- Azkar -->
-        <section id="azkar" class="section-content">
-            <div class="flex justify-center gap-2 mb-8 overflow-x-auto py-2">
-                <button id="btn-morning" onclick="loadAzkar('morning')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أذكار الصباح</button>
-                <button id="btn-evening" onclick="loadAzkar('evening')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أذكار المساء</button>
-                <button id="btn-dead" onclick="loadAzkar('dead')" class="azkar-nav px-6 py-2 rounded-full font-bold bg-slate-100 dark:bg-slate-800">أدعية للمتوفى</button>
-            </div>
-            <div id="azkarList" class="grid gap-3 max-w-3xl mx-auto"></div>
-        </section>
-
-        <!-- Rosary -->
-        <section id="rosary" class="section-content">
-            <div class="max-w-sm mx-auto text-center p-8 bg-slate-50 dark:bg-slate-900 rounded-3xl">
-                <select id="rosaryMode" class="w-full p-3 rounded-xl bg-white dark:bg-slate-800 mb-8 font-bold text-center">
-                    <option>سبحان الله</option>
-                    <option>الحمد لله</option>
-                    <option>الله أكبر</option>
-                    <option>استغفر الله</option>
-                </select>
+            <!-- Search Bar -->
+            <div class="px-4 pb-3">
                 
-                <div class="text-6xl font-bold gold-text mb-8 py-10" id="rosaryCount">0</div>
+                <!-- Promo Banner -->
+                <div class="promo-banner rounded-2xl p-4 mb-4 text-white shadow-lg flex items-center justify-between">
+                    <div class="z-10 relative">
+                        <span class="bg-secondary text-black text-xs font-black px-2 py-1 rounded mb-2 inline-block badge-glow">عرض خاص 🔥</span>
+                        <h3 class="font-bold text-lg leading-tight mb-1">خصم حصري للطلبات أونلاين!</h3>
+                        <p class="text-sm opacity-90">استمتع بألذ الوجبات بأسعار مميزة</p>
+                    </div>
+                    <i class="ph-fill ph-fire text-6xl opacity-20 absolute left-2 top-1/2 -translate-y-1/2 z-0"></i>
+                </div>
 
-                <button onclick="incrementRosary()" class="w-full py-8 bg-gold text-white rounded-2xl text-2xl font-bold shadow-lg active:scale-95 mb-4">
-                    تسبيح
-                </button>
-                <button onclick="resetRosary()" class="text-slate-400 text-sm">تصفير العداد</button>
+                <div class="relative z-10">
+                    <input type="text" id="searchInput" oninput="filterMenu()" placeholder="ابحث عن وجبتك المفضلة..." 
+                        class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-2xl py-3 pr-11 pl-4 text-sm focus:ring-2 focus:ring-primary dark:text-white transition">
+                    <i class="ph ph-magnifying-glass absolute right-4 top-3.5 text-gray-400 text-lg"></i>
+                </div>
             </div>
-        </section>
 
-    </main>
+            <!-- Categories Tabs -->
+            <div class="flex overflow-x-auto hide-scrollbar gap-2 px-4 pb-3" id="cat-tabs">
+                <!-- Injected via JS -->
+            </div>
+        </header>
 
-    <footer class="py-12 text-center text-slate-400 text-sm border-t border-slate-100 dark:border-slate-800 mt-10">
-        <p>صدقة جارية عن روح زكريا أحمد محمد حسن</p>
-    </footer>
+        <!-- Menu Grid -->
+        <main class="p-4">
+            <div id="items-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Items injected via JS -->
+            </div>
+            
+            <!-- Empty State for Search -->
+            <div id="empty-search" class="hidden flex-col items-center justify-center py-12 text-gray-400">
+                <i class="ph ph-magnifying-glass text-5xl mb-3 opacity-50"></i>
+                <p class="font-bold">لم نجد ما تبحث عنه!</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. Floating Cart Button (Bottom) -->
+    <div id="fab-cart" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden transition-transform duration-300">
+        <button onclick="openCart()" class="bg-primary text-white px-6 py-3.5 rounded-full shadow-xl shadow-red-500/30 font-bold flex items-center gap-3 hover:bg-red-700 transition active:scale-95">
+            <div class="relative">
+                <i class="ph ph-shopping-cart text-2xl"></i>
+                <span id="fab-count" class="absolute -top-2 -right-2 bg-secondary text-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-primary border-solid">0</span>
+            </div>
+            <span>عـرض السلة</span>
+            <span class="text-red-200 text-sm">|</span>
+            <span id="fab-total" class="font-black text-secondary">0.000 ر.ع</span>
+        </button>
+    </div>
+
+    <!-- 4. Item Options Modal (Bottom Sheet) -->
+    <div id="item-modal" class="fixed inset-0 z-50 hidden">
+        <div class="drawer-overlay absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0" onclick="closeItemModal()"></div>
+        <div class="drawer-content absolute bottom-0 left-0 right-0 bg-white dark:bg-darkCard rounded-t-3xl translate-y-full opacity-0 max-h-[90vh] flex flex-col shadow-2xl sm:max-w-md sm:mx-auto overflow-hidden">
+            
+            <div class="relative w-full h-48 bg-gray-100 dark:bg-gray-800 shrink-0">
+                <img id="modal-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                <button onclick="closeItemModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition z-10"><i class="ph ph-x"></i></button>
+                <h3 id="modal-title" class="absolute bottom-4 left-4 right-4 font-bold text-2xl text-white drop-shadow-lg z-10">تخصيص الوجبة</h3>
+            </div>
+            
+            <div class="p-5 overflow-y-auto hide-scrollbar flex-1 space-y-5" id="options-render">
+                <!-- Options injected here -->
+            </div>
+            
+            <div class="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-darkCard/80">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center bg-white dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
+                        <button onclick="changeOptQty(-1)" class="w-10 h-10 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300">-</button>
+                        <span id="opt-qty-val" class="w-8 text-center font-bold text-lg dark:text-white">1</span>
+                        <button onclick="changeOptQty(1)" class="w-10 h-10 flex items-center justify-center text-lg font-bold text-primary">+</button>
+                    </div>
+                    <button onclick="addItemToCart()" class="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 flex justify-center items-center gap-2">
+                        <span>إضافة</span>
+                        <span class="text-sm opacity-80">| <span id="modal-price-total">0.000</span> ر.ع</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Cart & Checkout Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+        <div class="drawer-overlay absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0" onclick="closeCart()"></div>
+        <div class="drawer-content absolute top-0 bottom-0 left-0 w-full sm:max-w-md bg-white dark:bg-darkCard -translate-x-full opacity-0 flex flex-col shadow-2xl">
+            
+            <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800 bg-primary text-white">
+                <h2 class="font-bold text-lg flex items-center gap-2"><i class="ph ph-shopping-bag"></i> سلة الطلبات</h2>
+                <button onclick="closeCart()" class="text-white/80 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-darkBg">
+                <!-- Info Alert -->
+                <div class="bg-red-50 dark:bg-red-900/20 border border-primary/30 rounded-xl p-3 mb-5 flex gap-3 text-sm">
+                    <i class="ph ph-info text-primary text-lg flex-shrink-0 mt-0.5"></i>
+                    <p class="text-primary dark:text-red-400 font-semibold">هذا الطلب مخصص للحضور والاستلام من الفرع فقط.</p>
+                </div>
+
+                <!-- Cart Items -->
+                <div id="cart-display" class="space-y-3 mb-6">
+                    <!-- Items -->
+                </div>
+
+                <!-- Checkout Form -->
+                <div id="checkout-form" class="space-y-4 bg-white dark:bg-darkCard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hidden">
+                    <h3 class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2">بيانات الاستلام</h3>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">الاسم الكريم</label>
+                        <input type="text" id="customer-name" placeholder="أدخل اسمك" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">فرع الاستلام</label>
+                        <select id="branch-select" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none">
+                            <option value="">اختر الفرع...</option>
+                            <option value="فرع الخوض - شارع البركات">الخوض - شارع البركات</option>
+                            <option value="فرع الخوير - شارع سوق الخوير">الخوير - سوق الخوير</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">وقت الاستلام</label>
+                        <div class="flex gap-2 bg-gray-50 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <label class="flex-1 text-center cursor-pointer">
+                                <input type="radio" name="pickup-time-type" value="asap" checked onchange="toggleTimeInput()" class="peer sr-only">
+                                <div class="py-1.5 text-xs font-bold rounded-lg text-gray-500 peer-checked:bg-white dark:peer-checked:bg-darkCard peer-checked:text-primary peer-checked:shadow-sm transition">أقرب وقت (<span id="asap-time-span">20</span>د)</div>
+                            </label>
+                            <label class="flex-1 text-center cursor-pointer">
+                                <input type="radio" name="pickup-time-type" value="scheduled" onchange="toggleTimeInput()" class="peer sr-only">
+                                <div class="py-1.5 text-xs font-bold rounded-lg text-gray-500 peer-checked:bg-white dark:peer-checked:bg-darkCard peer-checked:text-primary peer-checked:shadow-sm transition">تحديد وقت</div>
+                            </label>
+                        </div>
+                        <select id="scheduled-time-select" class="w-full mt-2 bg-white dark:bg-darkBg border border-primary text-primary rounded-xl px-3 py-2 text-sm hidden font-bold outline-none"></select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">ملاحظات (رقم/لون السيارة)</label>
+                        <textarea id="pickup-notes" rows="2" placeholder="اختياري..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-white dark:bg-darkCard border-t border-gray-200 dark:border-gray-800 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-500 font-bold text-sm">الإجمالي المطلوب:</span>
+                    <span class="text-2xl font-black text-primary"><span id="total-val">0.000</span> ر.ع</span>
+                </div>
+                <button id="btn-submit-order" onclick="submitOrder()" disabled class="w-full bg-[#25D366] disabled:bg-gray-400 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 flex justify-center items-center gap-2">
+                    <i class="ph ph-whatsapp-logo text-2xl"></i> إرسال الطلب واتساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts Container -->
+    <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[70] flex flex-col gap-2 pointer-events-none w-[90%] sm:w-auto text-center"></div>
 
     <script>
-        const surahNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+        // --- Configuration & Variables ---
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS_mLvfHoHl4JY7Njpl7mfVL1gXbhg_tBbGyi-NWLacXPmRmPornWAg7bqDBGdNya2Ky_haLSvuBD6j/pub?output=csv";
+        
+        let deliveryTime = "20"; 
+        let whatsappNumber = "96892018510";
+        let openingTime = "00:00"; 
+        let closingTime = "23:59"; 
 
-        const reciters = [
-            { name: "عبد الباسط عبد الصمد", server: "https://server7.mp3quran.net/basit/" },
-            { name: "مشاري العفاسي", server: "https://server8.mp3quran.net/afs/" },
-            { name: "ماهر المعيقلي", server: "https://server12.mp3quran.net/maher/" },
-            { name: "ياسر الدوسري", server: "https://server11.mp3quran.net/yasser/" },
-            { name: "محمد صديق المنشاوي", server: "https://server10.mp3quran.net/minsh/" }
-        ];
+        const saucesUI = `
+            <option value="صوص رانش">صوص رانش</option>
+            <option value="صوص باربيكو">صوص باربيكو</option>
+            <option value="صوص كوكتيل">صوص كوكتيل</option>
+            <option value="صوص حار">صوص حار</option>
+            <option value="صوص سويت شيلي">صوص سويت شيلي</option>
+            <option value="صوص ثوميه">صوص ثوميه</option>
+            <option value="حلقات هالبينو">حلقات هالبينو</option>
+        `;
+        
+        const drinksUI = `
+            <option value="السي كولا">السي كولا</option>
+            <option value="السي تفاح">السي تفاح</option>
+            <option value="السي كولا دايت">السي كولا دايت</option>
+            <option value="السي ليمون">السي ليمون</option>
+            <option value="السي ستريم">السي ستريم</option>
+            <option value="السي برتقال">السي برتقال</option>
+            <option value="السي حمضيات">السي حمضيات</option>
+        `;
 
-        const azkarData = {
-            morning: [{t:"آية الكرسي",n:1},{t:"سورة الإخلاص والمعوذتين",n:3},{t:"أصبحنا وأصبح الملك لله",n:1},{t:"بسم الله الذي لا يضر مع اسمه شيء",n:3}],
-            evening: [{t:"آية الكرسي",n:1},{t:"سورة الإخلاص والمعوذتين",n:3},{t:"أمسينا وأمسى الملك لله",n:1},{t:"أعوذ بكلمات الله التامات",n:3}],
-            dead: [{t:"اللهم اغفر له وارحمه",n:1},{t:"اللهم اجعل قبره روضة من رياض الجنة",n:1},{t:"اللهم ثبته عند السؤال",n:1}]
-        };
+        let menuData = {};
+        let allItemsFlat = []; // For search
+        let cart = [];
+        let selectedItem = null;
+        let currentOptQty = 1;
+        let currentCategory = ""; 
 
-        function init() {
-            renderSurahGrid();
-            fillSelects();
-            loadAzkar('morning');
-            document.getElementById('rosaryCount').innerText = localStorage.getItem('rosaryCount') || 0;
+        // --- Core Functions ---
+        
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'bg-red-500 text-white';
+            toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg font-bold text-sm transform transition-all duration-300 translate-y-10 opacity-0 flex items-center justify-center gap-2`;
+            toast.innerHTML = type === 'success' ? `<i class="ph ph-check-circle text-lg text-green-400 dark:text-green-600"></i> ${msg}` : `<i class="ph ph-warning-circle text-lg"></i> ${msg}`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function toggleDarkMode() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            document.getElementById('themeIcon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         }
 
-        function switchTab(id) {
-            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-card').forEach(n => n.classList.remove('active'));
-            document.getElementById(`tab-${id}`).classList.add('active');
+        // Init theme
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         }
 
-        function renderSurahGrid() {
-            const grid = document.getElementById('surahGrid');
-            surahNames.forEach((name, i) => {
-                grid.innerHTML += `
-                    <div onclick="readSurah(${i+1}, '${name}')" class="bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-transparent hover:border-gold cursor-pointer text-center">
-                        <div class="text-xs text-slate-400 mb-1">${i+1}</div>
-                        <div class="font-bold text-sm">سورة ${name}</div>
-                    </div>
-                `;
-            });
-        }
-
-        async function readSurah(id, name) {
-            document.getElementById('surahGrid').classList.add('hidden');
-            document.getElementById('quranReader').classList.remove('hidden');
-            document.getElementById('surahTitleDisplay').innerText = `سورة ${name}`;
-            const container = document.getElementById('ayahContainer');
-            container.innerHTML = "جاري التحميل...";
+        function isRestaurantOpen() {
+            if (!openingTime || !closingTime) return true;
+            const now = new Date();
+            const currentTotal = now.getHours() * 60 + now.getMinutes();
             try {
-                const res = await fetch(`https://api.alquran.cloud/v1/surah/${id}`);
-                const data = await res.json();
-                container.innerHTML = data.data.ayahs.map(a => `${a.text} ﴿${a.numberInSurah}﴾ `).join(' ');
-            } catch (e) { container.innerHTML = "تعذر التحميل."; }
+                const [oH, oM] = openingTime.split(':').map(Number);
+                const [cH, cM] = closingTime.split(':').map(Number);
+                const oTot = oH * 60 + oM, cTot = cH * 60 + cM;
+                if (oTot < cTot) return currentTotal >= oTot && currentTotal <= cTot;
+                else return currentTotal >= oTot || currentTotal <= cTot;
+            } catch (e) { return true; }
         }
 
-        function closeReader() {
-            document.getElementById('quranReader').classList.add('hidden');
-            document.getElementById('surahGrid').classList.remove('hidden');
+        function formatTimeAMPM(time24) {
+            const [h, m] = time24.split(':');
+            let hours = parseInt(h);
+            const ampm = hours >= 12 ? 'م' : 'ص';
+            hours = hours % 12 || 12;
+            return `${hours}:${m} ${ampm}`;
         }
 
-        function fillSelects() {
-            const rSel = document.getElementById('reciterSelect');
-            const sSel = document.getElementById('audioSurahSelect');
-            reciters.forEach((r, i) => rSel.innerHTML += `<option value="${i}">${r.name}</option>`);
-            surahNames.forEach((n, i) => {
-                const val = (i+1).toString().padStart(3, '0');
-                sSel.innerHTML += `<option value="${val}">سورة ${n}</option>`;
-            });
+        async function fetchMenuData() {
+            try {
+                const response = await fetch(csvUrl);
+                const csvText = await response.text();
+                const rows = csvText.split('\n').map(r => r.trim()).filter(r => r);
+                
+                for(let i = 1; i < rows.length; i++) {
+                    const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+                    if(cols.length < 3) continue;
+
+                    let cat = cols[0];
+                    let name = cols[1];
+                    let price = parseFloat(cols[2].replace(/[^\d.]/g, '')) || 0;
+
+                    if (cat === "الاعدادات") {
+                        if (name === "رقم الواتساب") whatsappNumber = cols[2];
+                        if (name === "وقت الفتح") openingTime = cols[2].trim();
+                        if (name === "وقت الغلق") closingTime = cols[2].trim();
+                        if (name === "وقت الاستلام" || name === "وقت التوصيل") {
+                            deliveryTime = cols[2].replace(/[^\d]/g, '') || "20"; 
+                            document.getElementById('asap-time-span').innerText = deliveryTime;
+                        }
+                        continue;
+                    }
+
+                    if (cat === "جبن اضافي") continue;
+
+                    const mergedCats = ["مشروبات", "باكت شيبس", "كومبو", "مياه", "خبز", "إضافات", "صوصات"];
+                    if (mergedCats.includes(cat)) cat = "اضافات وجبات";
+                    
+                    let img = cols[3] ? cols[3].replace(/[\[\]]/g, '') : '';
+                    if(name.includes("قطعة استريبس")) img = "https://i.ibb.co/Vph8WY44/mmw-638669571739251392.webp";
+
+                    let flv = cols[4] === 'نعم';
+                    let s = parseInt(cols[5]) || 0;
+                    let d = parseInt(cols[6]) || 0;
+
+                    if(name.includes("صوصات متنوعة")) s = Math.max(s, 1);
+                    if(name.includes("كومبو") || name.includes("مشروبات غازية")) d = Math.max(d, 1); 
+
+                    const itemObj = { id: i, name, price, img, flv, s, d, catOrigin: cat };
+                    
+                    if(!menuData[cat]) menuData[cat] = [];
+                    menuData[cat].push(itemObj);
+                    allItemsFlat.push(itemObj);
+                }
+
+                setupStartButton();
+
+            } catch(e) {
+                console.error(e);
+                document.getElementById('status-tag').innerText = "حدث خطأ في تحميل البيانات.";
+                document.getElementById('status-tag').className = "bg-red-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
+            }
         }
 
-        const audio = document.getElementById('audioEngine');
-        function loadAudio() {
-            const r = reciters[document.getElementById('reciterSelect').value];
-            const s = document.getElementById('audioSurahSelect').value;
-            audio.src = `${r.server}${s}.mp3`;
-            document.getElementById('nowPlayingSurah').innerText = `سورة ${surahNames[parseInt(s)-1]}`;
-            document.getElementById('nowPlayingReciter').innerText = r.name;
-            audio.play();
-            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
-        }
-
-        function togglePlay() {
-            if(!audio.src) { loadAudio(); return; }
-            if(audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>'; }
-            else { audio.pause(); document.getElementById('playBtn').innerHTML = '<i class="fas fa-play ml-1"></i>'; }
-        }
-
-        function changeReciter() { if(audio.src) loadAudio(); }
-
-        audio.ontimeupdate = () => {
-            if(!audio.duration) return;
-            document.getElementById('audioTimeline').value = (audio.currentTime / audio.duration) * 100;
-            document.getElementById('audioCurrent').innerText = formatTime(audio.currentTime);
-            document.getElementById('audioTotal').innerText = formatTime(audio.duration);
-        };
-
-        function formatTime(s) {
-            const m = Math.floor(s/60), sec = Math.floor(s%60);
-            return `${m}:${sec.toString().padStart(2,'0')}`;
-        }
-
-        function loadAzkar(cat) {
-            document.querySelectorAll('.azkar-nav').forEach(b => b.classList.replace('bg-gold','bg-slate-100'));
-            document.getElementById(`btn-${cat}`).classList.replace('bg-slate-100','bg-gold');
-            document.getElementById(`btn-${cat}`).classList.add('text-white');
+        function setupStartButton() {
+            const btn = document.getElementById('start-btn');
+            const statusTag = document.getElementById('status-tag');
+            const startText = document.getElementById('start-text');
+            const loadIcon = document.getElementById('loading-icon');
             
-            document.getElementById('azkarList').innerHTML = azkarData[cat].map(a => `
-                <div class="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl flex justify-between items-center">
-                    <p class="text-lg quran-font">${a.t}</p>
-                    <button onclick="countZikr(this)" class="w-10 h-10 rounded-full border border-gold text-gold font-bold shrink-0 ml-4">${a.n}</button>
-                </div>
-            `).join('');
+            statusTag.classList.remove('animate-pulse');
+            
+            if (isRestaurantOpen()) {
+                startText.innerText = "تصفح المنيو 🍗";
+                btn.disabled = false;
+                statusTag.innerText = "مفتوح - طلبات استلام فقط";
+                statusTag.className = "bg-green-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
+            } else {
+                startText.innerText = "المطعم مغلق";
+                btn.disabled = true;
+                const openAMPM = formatTimeAMPM(openingTime);
+                const closeAMPM = formatTimeAMPM(closingTime);
+                statusTag.innerText = `مغلق (من ${openAMPM} إلى ${closeAMPM})`;
+                statusTag.className = "bg-red-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
+            }
         }
 
-        function countZikr(btn) {
-            let n = parseInt(btn.innerText);
-            if(n > 1) btn.innerText = n - 1;
-            else { btn.innerHTML = '✓'; btn.classList.add('bg-gold','text-white'); }
+        function startApp() {
+            document.getElementById('splash-screen').classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                document.getElementById('main-app').classList.remove('hidden');
+                
+                renderTabs();
+                if(!currentCategory) currentCategory = Object.keys(menuData)[0];
+                showCategory(currentCategory);
+            }, 500);
         }
 
-        function incrementRosary() {
-            let c = parseInt(document.getElementById('rosaryCount').innerText) + 1;
-            document.getElementById('rosaryCount').innerText = c;
-            localStorage.setItem('rosaryCount', c);
+        // --- UI Rendering ---
+
+        function renderTabs() {
+            const tabs = document.getElementById('cat-tabs');
+            tabs.innerHTML = '';
+            
+            tabs.innerHTML += `<button class="cat-tab px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap transition-colors bg-white dark:bg-darkCard text-gray-600 dark:text-gray-300" onclick="showCategory('all', this)">الكل</button>`;
+
+            Object.keys(menuData).forEach((cat) => {
+                tabs.innerHTML += `<button class="cat-tab px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap transition-colors bg-white dark:bg-darkCard text-gray-600 dark:text-gray-300" onclick="showCategory('${cat}', this)">${cat}</button>`;
+            });
+
+            // Set active class on first load
+            setTimeout(() => {
+                const defaultBtn = [...document.querySelectorAll('.cat-tab')].find(b => b.innerText === currentCategory) || document.querySelectorAll('.cat-tab')[0];
+                if(defaultBtn) setActiveTab(defaultBtn);
+            }, 50);
         }
 
-        function resetRosary() {
-            document.getElementById('rosaryCount').innerText = 0;
-            localStorage.setItem('rosaryCount', 0);
+        function setActiveTab(btn) {
+            document.querySelectorAll('.cat-tab').forEach(t => {
+                t.classList.remove('bg-primary', 'text-white', 'border-primary');
+                t.classList.add('bg-white', 'dark:bg-darkCard', 'text-gray-600', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-700');
+            });
+            if(btn) {
+                btn.classList.remove('bg-white', 'dark:bg-darkCard', 'text-gray-600', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-700');
+                btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         }
 
-        function shareApp() {
-            const t = `صدقة جارية عن روح زكريا أحمد محمد حسن: ${window.location.href}`;
-            navigator.clipboard.writeText(t).then(() => {
-                const toast = document.getElementById('shareToast');
-                toast.style.display = 'block';
-                setTimeout(() => toast.style.display = 'none', 2000);
+        function showCategory(cat, btn = null) {
+            currentCategory = cat;
+            if(btn) setActiveTab(btn);
+            document.getElementById('searchInput').value = ''; // clear search
+            renderItems(cat === 'all' ? allItemsFlat : menuData[cat]);
+        }
+
+        function filterMenu() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('bg-primary', 'text-white')); // visual cue that we are searching
+            
+            let filtered = allItemsFlat.filter(i => i.name.toLowerCase().includes(query));
+            renderItems(filtered);
+        }
+
+        function renderItems(items) {
+            const list = document.getElementById('items-list');
+            const empty = document.getElementById('empty-search');
+            list.innerHTML = '';
+            
+            if(!items || items.length === 0) {
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
+                return;
+            }
+            empty.classList.add('hidden');
+            empty.classList.remove('flex');
+
+            items.forEach((item, idx) => {
+                const isPopular = item.price > 1.5 && Math.random() > 0.6; // Simulate popular items logically
+                const popularBadge = isPopular ? `<span class="absolute top-2 right-2 bg-secondary text-black text-[10px] font-black px-2 py-1 rounded-full badge-glow z-10 flex items-center gap-1 shadow-md"><i class="ph-fill ph-star"></i> الأكثر مبيعاً</span>` : '';
+
+                list.innerHTML += `
+                    <div class="food-card bg-white dark:bg-darkCard rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden cursor-pointer active:scale-95 transition-all duration-300 fade-in-up flex flex-col group" style="animation-delay: ${idx * 0.05}s" onclick='initOptions(${JSON.stringify(item)})'>
+                        <div class="relative h-44 w-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                            ${popularBadge}
+                            <img src="${item.img || 'https://via.placeholder.com/300?text=Baraka'}" onerror="this.src='https://via.placeholder.com/300?text=Baraka'" class="food-card-img w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between relative">
+                            <h3 class="font-bold text-base text-gray-900 dark:text-white leading-tight mb-3 pr-2 border-r-2 border-primary">${item.name}</h3>
+                            <div class="flex justify-between items-center mt-auto">
+                                <span class="font-black text-primary text-lg">${item.price.toFixed(3)} <span class="text-xs font-bold text-gray-500">ر.ع</span></span>
+                                <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:-translate-y-1 transition-transform"><i class="ph ph-plus font-bold text-lg"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
             });
         }
 
-        window.onload = init;
+        // --- Modals & Drawers ---
+
+        function initOptions(item) {
+            selectedItem = item;
+            currentOptQty = 1;
+            document.getElementById('opt-qty-val').innerText = currentOptQty;
+            document.getElementById('modal-title').innerText = item.name;
+            document.getElementById('modal-img').src = item.img || 'https://via.placeholder.com/400?text=Baraka';
+            updateModalPrice();
+            
+            let html = ``;
+            const boxClass = `bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700`;
+            const labelClass = `block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2`;
+            const selectClass = `w-full bg-white dark:bg-darkBg border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none`;
+
+            if(item.flv) {
+                html += `<div class="${boxClass}">
+                    <label class="${labelClass}">🌶️ الطعم</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="sel-flv" value="عادي" checked class="peer sr-only">
+                            <div class="text-center py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 peer-checked:border-primary peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20 peer-checked:text-primary transition font-bold text-sm dark:text-gray-300">عادي</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="sel-flv" value="حار" class="peer sr-only">
+                            <div class="text-center py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 peer-checked:border-primary peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20 peer-checked:text-primary transition font-bold text-sm dark:text-gray-300">حار 🌶️</div>
+                        </label>
+                    </div>
+                </div>`;
+            }
+            
+            if(item.name.includes("توستر") || item.name.includes("تربل توستر")) {
+                html += `<div class="${boxClass} border-secondary">
+                    <label class="${labelClass}">🧀 إضافة جبن (اختياري)</label>
+                    <select id="sel-cheese" onchange="updateModalPrice()" class="${selectClass}">
+                        <option value="0">بدون إضافة</option>
+                        <option value="0.100">شريحة جبن (+0.100 ر.ع)</option>
+                        <option value="0.200">شريحتين جبن (+0.200 ر.ع)</option>
+                        <option value="0.300">3 شرائح جبن (+0.300 ر.ع)</option>
+                    </select>
+                </div>`;
+            }
+
+            if(item.d > 0) {
+                for(let i=1; i<=item.d; i++) {
+                    html += `<div class="${boxClass}"><label class="${labelClass}">🥤 مشروب ${item.d > 1 ? i : ''}</label><select class="sel-drink ${selectClass}">${drinksUI}</select></div>`;
+                }
+            }
+
+            if(item.s > 0) {
+                for(let i=1; i<=item.s; i++) {
+                    html += `<div class="${boxClass}"><label class="${labelClass}">🧂 صوص ${item.s > 1 ? i : ''}</label><select class="sel-sauce ${selectClass}">${saucesUI}</select></div>`;
+                }
+            }
+            
+            html += `<div class="${boxClass}">
+                <label class="${labelClass}">📝 ملاحظات خاصة (بدون طماطم، الخ...)</label>
+                <textarea id="sel-note" rows="2" class="w-full bg-white dark:bg-darkBg border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none resize-none"></textarea>
+            </div>`;
+            
+            document.getElementById('options-render').innerHTML = html;
+            
+            // Open Modal
+            const modal = document.getElementById('item-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.drawer-overlay').classList.remove('opacity-0');
+                modal.querySelector('.drawer-content').classList.remove('translate-y-full', 'opacity-0');
+            }, 10);
+        }
+
+        function closeItemModal() {
+            const modal = document.getElementById('item-modal');
+            modal.querySelector('.drawer-overlay').classList.add('opacity-0');
+            modal.querySelector('.drawer-content').classList.add('translate-y-full', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function changeOptQty(change) {
+            currentOptQty += change;
+            if(currentOptQty < 1) currentOptQty = 1;
+            document.getElementById('opt-qty-val').innerText = currentOptQty;
+            updateModalPrice();
+        }
+
+        function updateModalPrice() {
+            if(!selectedItem) return;
+            const cheesePrice = parseFloat(document.getElementById('sel-cheese')?.value || 0);
+            const total = (selectedItem.price + cheesePrice) * currentOptQty;
+            document.getElementById('modal-price-total').innerText = total.toFixed(3);
+        }
+
+        // --- Cart Management ---
+
+        function addItemToCart() {
+            const cheeseSelect = document.getElementById('sel-cheese');
+            const cheesePrice = cheeseSelect ? parseFloat(cheeseSelect.value) : 0;
+            const cheeseText = cheeseSelect && cheesePrice > 0 ? cheeseSelect.options[cheeseSelect.selectedIndex].text : '';
+
+            const finalItemPrice = selectedItem.price + cheesePrice;
+            const flvRadio = document.querySelector('input[name="sel-flv"]:checked');
+
+            cart.push({
+                id: Date.now(), // unique ID for removal
+                name: selectedItem.name,
+                qty: currentOptQty,
+                unitPrice: finalItemPrice,
+                totalPrice: finalItemPrice * currentOptQty,
+                flv: flvRadio ? flvRadio.value : '',
+                cheeseInfo: cheeseText,
+                sauces: Array.from(document.querySelectorAll('.sel-sauce')).map(s => s.value),
+                drinks: Array.from(document.querySelectorAll('.sel-drink')).map(d => d.value),
+                note: document.getElementById('sel-note').value,
+                img: selectedItem.img
+            });
+            
+            updateCartUI();
+            closeItemModal();
+            showToast('تم الإضافة للسلة بنجاح 😋');
+
+            // Fire Confetti! 🎉
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.8 },
+                colors: ['#d32f2f', '#ffc107', '#ffffff'],
+                zIndex: 100
+            });
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+            
+            // Update FAB
+            const fab = document.getElementById('fab-cart');
+            document.getElementById('fab-count').innerText = count;
+            document.getElementById('fab-total').innerText = total.toFixed(3) + ' ر.ع';
+            
+            if(count > 0) fab.classList.remove('hidden');
+            else fab.classList.add('hidden');
+
+            // Update Drawer logic (if open)
+            renderCartItems();
+        }
+
+        function openCart() {
+            renderCartItems();
+            const modal = document.getElementById('cart-drawer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.drawer-overlay').classList.remove('opacity-0');
+                modal.querySelector('.drawer-content').classList.remove('-translate-x-full', 'opacity-0');
+            }, 10);
+        }
+
+        function closeCart() {
+            const modal = document.getElementById('cart-drawer');
+            modal.querySelector('.drawer-overlay').classList.add('opacity-0');
+            modal.querySelector('.drawer-content').classList.add('-translate-x-full', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function renderCartItems() {
+            const display = document.getElementById('cart-display');
+            const form = document.getElementById('checkout-form');
+            const submitBtn = document.getElementById('btn-submit-order');
+            
+            display.innerHTML = '';
+            let total = 0;
+            
+            if(cart.length === 0) {
+                display.innerHTML = `<div class="text-center py-10 text-gray-400"><i class="ph ph-shopping-cart text-5xl mb-2 opacity-50"></i><p>السلة فارغة</p></div>`;
+                form.classList.add('hidden');
+                submitBtn.disabled = true;
+            } else {
+                form.classList.remove('hidden');
+                submitBtn.disabled = false;
+                
+                cart.forEach((item) => {
+                    total += item.totalPrice;
+                    
+                    let detailsHTML = '';
+                    if(item.flv) detailsHTML += `<span class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">${item.flv}</span>`;
+                    if(item.cheeseInfo) detailsHTML += `<span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-1.5 py-0.5 rounded text-[10px]">🧀 جبن</span>`;
+                    if(item.sauces.length) detailsHTML += `<p class="text-[11px] text-gray-500 truncate w-full mt-1">🧂 ${item.sauces.join('، ')}</p>`;
+                    if(item.drinks.length) detailsHTML += `<p class="text-[11px] text-gray-500 truncate w-full">🥤 ${item.drinks.join('، ')}</p>`;
+                    if(item.note) detailsHTML += `<p class="text-[11px] text-gray-400 italic mt-1 max-w-[180px] truncate">"${item.note}"</p>`;
+
+                    display.innerHTML += `
+                        <div class="bg-white dark:bg-darkCard p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-3 relative">
+                            <button onclick="removeFromCart(${item.id})" class="absolute top-2 left-2 text-red-400 hover:text-red-600 p-1"><i class="ph ph-trash"></i></button>
+                            <img src="${item.img || 'https://via.placeholder.com/60'}" class="w-16 h-16 rounded-xl object-cover bg-gray-100">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-sm dark:text-white leading-tight pr-6">${item.name}</h4>
+                                <div class="flex flex-wrap gap-1 mt-1 mb-2">${detailsHTML}</div>
+                                <div class="flex justify-between items-center mt-auto">
+                                    <span class="font-bold text-primary text-sm">${item.totalPrice.toFixed(3)} ر.ع</span>
+                                    <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg dark:text-white">العدد: ${item.qty}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+            document.getElementById('total-val').innerText = total.toFixed(3);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartUI();
+        }
+
+        // --- Checkout & Time ---
+
+        function generateTimeOptions() {
+            const select = document.getElementById('scheduled-time-select');
+            select.innerHTML = '';
+            const now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+            let startMins = Math.ceil((currentMins + 15) / 15) * 15; 
+            
+            // تحويل أوقات العمل من جوجل شيت إلى دقائق للمقارنة
+            let oTot = 0, cTot = 1440;
+            try {
+                const [oH, oM] = openingTime.split(':').map(Number);
+                const [cH, cM] = closingTime.split(':').map(Number);
+                oTot = oH * 60 + oM;
+                cTot = cH * 60 + cM;
+            } catch(e) {}
+
+            let validOptionsCount = 0;
+            
+            // البحث عن أقرب 16 وقت متاح ضمن ساعات العمل
+            for(let i = 0; i < 48; i++) { 
+                let m = startMins + (i * 15);
+                let timeOfDay = m % 1440; // تحويل الوقت لنظام 24 ساعة كحد أقصى
+                
+                // التحقق مما إذا كان الوقت المولد يقع ضمن ساعات العمل
+                let isValid = false;
+                if (oTot < cTot) {
+                    isValid = timeOfDay >= oTot && timeOfDay <= cTot;
+                } else {
+                    // في حال كان وقت الإغلاق بعد منتصف الليل (مثال: يفتح 10 ص ويغلق 2 ص)
+                    isValid = timeOfDay >= oTot || timeOfDay <= cTot;
+                }
+
+                // إذا كان الوقت صالحاً (المطعم مفتوح فيه)، أضفه للقائمة
+                if (isValid) {
+                    let h = Math.floor(timeOfDay / 60);
+                    let mins = timeOfDay % 60;
+                    let timeStr = formatTimeAMPM(`${h}:${mins < 10 ? '0'+mins : mins}`);
+                    select.innerHTML += `<option value="${timeStr}">${timeStr}</option>`;
+                    validOptionsCount++;
+                }
+                
+                if (validOptionsCount >= 16) break; // نكتفي بـ 16 خيار كحد أقصى
+            }
+
+            // في حال عدم توفر أوقات (مثلاً المطعم سيغلق بعد 5 دقائق)
+            if (validOptionsCount === 0) {
+                select.innerHTML = '<option value="">لا توجد أوقات متاحة للجدولة حالياً</option>';
+            }
+        }
+
+        function toggleTimeInput() {
+            const type = document.querySelector('input[name="pickup-time-type"]:checked').value;
+            const select = document.getElementById('scheduled-time-select');
+            if (type === 'scheduled') {
+                select.classList.remove('hidden');
+                generateTimeOptions();
+            } else {
+                select.classList.add('hidden');
+            }
+        }
+
+        function submitOrder() {
+            if(!isRestaurantOpen()) {
+                showToast(`عذراً، انتهت أوقات عمل المطعم للتو.`, 'error');
+                return;
+            }
+
+            const custName = document.getElementById('customer-name').value.trim();
+            const branch = document.getElementById('branch-select').value;
+            
+            if(!custName) return showToast("يرجى كتابة اسم العميل أولاً.", 'error');
+            if(!branch) return showToast("يرجى اختيار فرع الاستلام.", 'error');
+
+            let finalTime = `أقرب وقت (خلال ${deliveryTime} دقيقة)`;
+            if (document.querySelector('input[name="pickup-time-type"]:checked').value === 'scheduled') {
+                const selectedTime = document.getElementById('scheduled-time-select').value;
+                if(!selectedTime) return showToast("عفواً، لا يوجد وقت متاح للجدولة حالياً.", 'error');
+                finalTime = `الساعة ${selectedTime}`;
+            }
+
+            const pNotes = document.getElementById('pickup-notes').value.trim();
+
+            let text = `*طلب جديد - مطعم البركة 🍗*\n`;
+            text += `🔴 *طلب استلام من الفرع*\n`;
+            text += `👤 العميل: ${custName}\n`;
+            text += `📍 الفرع: ${branch}\n`;
+            text += `⏱️ وقت الاستلام: *${finalTime}*\n`;
+            if(pNotes) text += `🚗 ملاحظات (السيارة): ${pNotes}\n`;
+            text += `\n-- التفاصيل --\n`;
+            
+            cart.forEach(i => {
+                text += `▪️ *${i.name}* (العدد: ${i.qty})\n`;
+                if(i.flv) text += `   - الطعم: ${i.flv}\n`;
+                if(i.cheeseInfo) text += `   - الجبن: ${i.cheeseInfo}\n`;
+                if(i.sauces.length) text += `   - صوص: ${i.sauces.join('، ')}\n`;
+                if(i.drinks.length) text += `   - مشروب: ${i.drinks.join('، ')}\n`;
+                if(i.note) text += `   - ملاحظة: ${i.note}\n`;
+                text += `   - السعر: ${i.totalPrice.toFixed(3)} ر.ع\n\n`;
+            });
+            text += `====================\n💰 *الإجمالي: ${document.getElementById('total-val').innerText} ر.ع*\n====================`;
+            
+            showToast('جاري تحويلك للواتساب لإتمام الطلب... 🚀');
+            setTimeout(() => {
+                window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`);
+            }, 1000);
+        }
+
+        // Init
+        fetchMenuData();
     </script>
 </body>
 </html>
