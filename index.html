@@ -2,877 +2,300 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مطعم البركة - المنيو الذكي</title>
-    
-    <meta name="theme-color" content="#d32f2f">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/bRzWVmPC/logo.jpg">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/bRzWVmPC/logo.jpg">
-
-    <!-- Google Fonts: Cairo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تسجيل حصص المدرسين</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Phosphor Icons (For modern UI icons) -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Canvas Confetti for interactions -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
-                    colors: {
-                        primary: '#d32f2f', // Main Red
-                        secondary: '#ffc107', // Yellow
-                        darkBg: '#121212',
-                        darkCard: '#1e1e1e'
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Custom Scrollbars & Utilities */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: bold; }
+        .tab-inactive { color: #6b7280; }
         
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Glassmorphism effects */
-        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
-        .dark .glass-nav { background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(10px); }
-        
-        /* Splash Screen BG */
-        .splash-bg {
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.ibb.co/HTWhBfwz/Untitled-Project-7.jpg');
-            background-size: cover; background-position: center;
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
         }
-
-        /* Animations */
-        .fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; transform: translateY(15px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        
-        /* Drawer/Modal Transition */
-        .drawer-overlay { transition: opacity 0.3s ease; }
-        .drawer-content { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* New Impressive Styles */
-        .food-card-img { transition: transform 0.5s ease; }
-        .food-card:hover .food-card-img { transform: scale(1.08); }
-        .badge-glow { box-shadow: 0 0 10px rgba(255, 193, 7, 0.6); }
-        
-        /* Banner Slider */
-        .promo-banner {
-            background: linear-gradient(135deg, #d32f2f, #ff5252);
-            position: relative;
-            overflow: hidden;
-        }
-        .promo-banner::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-            animation: rotateBg 15s linear infinite;
-        }
-        @keyframes rotateBg { to { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-darkBg dark:text-gray-200 antialiased transition-colors duration-300">
+<body class="text-gray-800">
 
-    <!-- 1. Splash / Home Screen -->
-    <div id="splash-screen" class="fixed inset-0 z-[100] splash-bg flex flex-col items-center justify-center text-white transition-opacity duration-500">
-        <div class="animate-bounce mb-6">
-            <img src="https://i.ibb.co/bRzWVmPC/logo.jpg" class="w-32 h-32 rounded-full border-4 border-secondary object-cover shadow-2xl bg-white">
-        </div>
-        <h1 class="text-4xl font-bold mb-2 text-shadow-lg">مطعم البركة</h1>
-        <p class="text-gray-300 text-sm mb-8">📍 الخوض | الخوير</p>
-        
-        <div id="status-tag" class="bg-secondary text-black px-6 py-2 rounded-full font-bold text-sm mb-6 animate-pulse">
-            جاري تهيئة المنيو ⏳...
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-blue-600"><i class="fas fa-chalkboard-teacher ml-2"></i> إدارة الحصص</h1>
         </div>
         
-        <button id="start-btn" onclick="startApp()" disabled class="bg-primary hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-10 py-4 rounded-full font-bold text-lg shadow-[0_0_15px_rgba(211,47,47,0.5)] transition-all transform active:scale-95 flex items-center gap-2">
-            <i class="ph ph-spinner-gap animate-spin text-xl hidden" id="loading-icon"></i>
-            <span id="start-text">يرجى الانتظار...</span>
-        </button>
-    </div>
+        <!-- Navigation Tabs -->
+        <div class="max-w-4xl mx-auto px-4 flex border-b">
+            <button onclick="switchTab('record')" id="tab-record" class="py-3 px-6 tab-active transition-colors duration-200">
+                <i class="fas fa-plus-circle ml-1"></i> تسجيل حصة
+            </button>
+            <button onclick="switchTab('history')" id="tab-history" class="py-3 px-6 tab-inactive transition-colors duration-200">
+                <i class="fas fa-list-alt ml-1"></i> سجل الحصص المجمع
+            </button>
+        </div>
+    </header>
 
-    <!-- 2. Main App Content (Hidden initially) -->
-    <div id="main-app" class="hidden pb-24">
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
         
-        <!-- Header & Nav -->
-        <header class="sticky top-0 z-40 glass-nav border-b border-gray-200 dark:border-gray-800 shadow-sm">
-            <div class="px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <img src="https://i.ibb.co/bRzWVmPC/logo.jpg" class="w-10 h-10 rounded-full border-2 border-primary object-cover">
-                    <div>
-                        <h2 class="font-bold text-lg leading-tight dark:text-white">البركة</h2>
-                        <span class="text-[10px] text-primary font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">استلام فقط</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleDarkMode()" class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
-                        <i class="ph ph-moon text-xl dark:hidden"></i>
-                        <i class="ph ph-sun text-xl hidden dark:block"></i>
-                    </button>
-                </div>
-            </div>
+        <!-- إشعار الرسائل -->
+        <div id="toast" class="hidden w-full max-w-sm bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 shadow-sm" role="alert">
+            <span class="block sm:inline" id="toast-message">تم تسجيل الحصة بنجاح!</span>
+        </div>
 
-            <!-- Search Bar -->
-            <div class="px-4 pb-3">
+        <!-- Section: Record Class -->
+        <section id="sec-record" class="bg-white rounded-xl shadow-md p-6 max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-6 text-gray-700">تسجيل حصة جديدة</h2>
+            <form id="recordForm" onsubmit="submitForm(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="teacher">
+                        اسم المدرس
+                    </label>
+                    <select id="teacher" required class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="" disabled selected>جاري التحميل...</option>
+                        <!-- سيتم تحميل الأسماء هنا -->
+                    </select>
+                </div>
                 
-                <!-- Promo Banner -->
-                <div class="promo-banner rounded-2xl p-4 mb-4 text-white shadow-lg flex items-center justify-between">
-                    <div class="z-10 relative">
-                        <span class="bg-secondary text-black text-xs font-black px-2 py-1 rounded mb-2 inline-block badge-glow">عرض خاص 🔥</span>
-                        <h3 class="font-bold text-lg leading-tight mb-1">خصم حصري للطلبات أونلاين!</h3>
-                        <p class="text-sm opacity-90">استمتع بألذ الوجبات بأسعار مميزة</p>
-                    </div>
-                    <i class="ph-fill ph-fire text-6xl opacity-20 absolute left-2 top-1/2 -translate-y-1/2 z-0"></i>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="minutes">
+                        مدة الحصة (بالدقائق)
+                    </label>
+                    <input type="number" id="minutes" step="1" min="1" required placeholder="مثال: 45 أو 90" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
-                <div class="relative z-10">
-                    <input type="text" id="searchInput" oninput="filterMenu()" placeholder="ابحث عن وجبتك المفضلة..." 
-                        class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-2xl py-3 pr-11 pl-4 text-sm focus:ring-2 focus:ring-primary dark:text-white transition">
-                    <i class="ph ph-magnifying-glass absolute right-4 top-3.5 text-gray-400 text-lg"></i>
-                </div>
-            </div>
-
-            <!-- Categories Tabs -->
-            <div class="flex overflow-x-auto hide-scrollbar gap-2 px-4 pb-3" id="cat-tabs">
-                <!-- Injected via JS -->
-            </div>
-        </header>
-
-        <!-- Menu Grid -->
-        <main class="p-4">
-            <div id="items-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Items injected via JS -->
-            </div>
-            
-            <!-- Empty State for Search -->
-            <div id="empty-search" class="hidden flex-col items-center justify-center py-12 text-gray-400">
-                <i class="ph ph-magnifying-glass text-5xl mb-3 opacity-50"></i>
-                <p class="font-bold">لم نجد ما تبحث عنه!</p>
-            </div>
-        </main>
-    </div>
-
-    <!-- 3. Floating Cart Button (Bottom) -->
-    <div id="fab-cart" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden transition-transform duration-300">
-        <button onclick="openCart()" class="bg-primary text-white px-6 py-3.5 rounded-full shadow-xl shadow-red-500/30 font-bold flex items-center gap-3 hover:bg-red-700 transition active:scale-95">
-            <div class="relative">
-                <i class="ph ph-shopping-cart text-2xl"></i>
-                <span id="fab-count" class="absolute -top-2 -right-2 bg-secondary text-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-primary border-solid">0</span>
-            </div>
-            <span>عـرض السلة</span>
-            <span class="text-red-200 text-sm">|</span>
-            <span id="fab-total" class="font-black text-secondary">0.000 ر.ع</span>
-        </button>
-    </div>
-
-    <!-- 4. Item Options Modal (Bottom Sheet) -->
-    <div id="item-modal" class="fixed inset-0 z-50 hidden">
-        <div class="drawer-overlay absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0" onclick="closeItemModal()"></div>
-        <div class="drawer-content absolute bottom-0 left-0 right-0 bg-white dark:bg-darkCard rounded-t-3xl translate-y-full opacity-0 max-h-[90vh] flex flex-col shadow-2xl sm:max-w-md sm:mx-auto overflow-hidden">
-            
-            <div class="relative w-full h-48 bg-gray-100 dark:bg-gray-800 shrink-0">
-                <img id="modal-img" src="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                <button onclick="closeItemModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition z-10"><i class="ph ph-x"></i></button>
-                <h3 id="modal-title" class="absolute bottom-4 left-4 right-4 font-bold text-2xl text-white drop-shadow-lg z-10">تخصيص الوجبة</h3>
-            </div>
-            
-            <div class="p-5 overflow-y-auto hide-scrollbar flex-1 space-y-5" id="options-render">
-                <!-- Options injected here -->
-            </div>
-            
-            <div class="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-darkCard/80">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center bg-white dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
-                        <button onclick="changeOptQty(-1)" class="w-10 h-10 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300">-</button>
-                        <span id="opt-qty-val" class="w-8 text-center font-bold text-lg dark:text-white">1</span>
-                        <button onclick="changeOptQty(1)" class="w-10 h-10 flex items-center justify-center text-lg font-bold text-primary">+</button>
-                    </div>
-                    <button onclick="addItemToCart()" class="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 flex justify-center items-center gap-2">
-                        <span>إضافة</span>
-                        <span class="text-sm opacity-80">| <span id="modal-price-total">0.000</span> ر.ع</span>
+                
+                <div class="flex items-center justify-between">
+                    <button id="submitBtn" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200">
+                        حفظ السجل
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div id="formLoader" class="loader mt-4"></div>
+            </form>
+        </section>
 
-    <!-- 5. Cart & Checkout Drawer -->
-    <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
-        <div class="drawer-overlay absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0" onclick="closeCart()"></div>
-        <div class="drawer-content absolute top-0 bottom-0 left-0 w-full sm:max-w-md bg-white dark:bg-darkCard -translate-x-full opacity-0 flex flex-col shadow-2xl">
-            
-            <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-800 bg-primary text-white">
-                <h2 class="font-bold text-lg flex items-center gap-2"><i class="ph ph-shopping-bag"></i> سلة الطلبات</h2>
-                <button onclick="closeCart()" class="text-white/80 hover:text-white"><i class="ph ph-x text-xl"></i></button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-darkBg">
-                <!-- Info Alert -->
-                <div class="bg-red-50 dark:bg-red-900/20 border border-primary/30 rounded-xl p-3 mb-5 flex gap-3 text-sm">
-                    <i class="ph ph-info text-primary text-lg flex-shrink-0 mt-0.5"></i>
-                    <p class="text-primary dark:text-red-400 font-semibold">هذا الطلب مخصص للحضور والاستلام من الفرع فقط.</p>
+        <!-- Section: History and Grouping -->
+        <section id="sec-history" class="hidden">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-700">سجل الحصص المجمع</h2>
+                    <button onclick="loadLogs()" class="text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-sync-alt"></i> تحديث
+                    </button>
                 </div>
 
-                <!-- Cart Items -->
-                <div id="cart-display" class="space-y-3 mb-6">
-                    <!-- Items -->
-                </div>
-
-                <!-- Checkout Form -->
-                <div id="checkout-form" class="space-y-4 bg-white dark:bg-darkCard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hidden">
-                    <h3 class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-2">بيانات الاستلام</h3>
-                    
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">الاسم الكريم</label>
-                        <input type="text" id="customer-name" placeholder="أدخل اسمك" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none">
-                    </div>
-                    
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">فرع الاستلام</label>
-                        <select id="branch-select" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none">
-                            <option value="">اختر الفرع...</option>
-                            <option value="فرع الخوض - شارع البركات">الخوض - شارع البركات</option>
-                            <option value="فرع الخوير - شارع سوق الخوير">الخوير - سوق الخوير</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">وقت الاستلام</label>
-                        <div class="flex gap-2 bg-gray-50 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
-                            <label class="flex-1 text-center cursor-pointer">
-                                <input type="radio" name="pickup-time-type" value="asap" checked onchange="toggleTimeInput()" class="peer sr-only">
-                                <div class="py-1.5 text-xs font-bold rounded-lg text-gray-500 peer-checked:bg-white dark:peer-checked:bg-darkCard peer-checked:text-primary peer-checked:shadow-sm transition">أقرب وقت (<span id="asap-time-span">20</span>د)</div>
-                            </label>
-                            <label class="flex-1 text-center cursor-pointer">
-                                <input type="radio" name="pickup-time-type" value="scheduled" onchange="toggleTimeInput()" class="peer sr-only">
-                                <div class="py-1.5 text-xs font-bold rounded-lg text-gray-500 peer-checked:bg-white dark:peer-checked:bg-darkCard peer-checked:text-primary peer-checked:shadow-sm transition">تحديد وقت</div>
-                            </label>
-                        </div>
-                        <select id="scheduled-time-select" class="w-full mt-2 bg-white dark:bg-darkBg border border-primary text-primary rounded-xl px-3 py-2 text-sm hidden font-bold outline-none"></select>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 block">ملاحظات (رقم/لون السيارة)</label>
-                        <textarea id="pickup-notes" rows="2" placeholder="اختياري..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none resize-none"></textarea>
-                    </div>
+                <div id="historyLoader" class="loader mb-4"></div>
+                
+                <!-- سيتم عرض البيانات المجمعة هنا -->
+                <div id="logsContainer" class="space-y-6">
+                    <p class="text-center text-gray-500 py-4">جاري تحميل البيانات...</p>
                 </div>
             </div>
-            
-            <div class="p-4 bg-white dark:bg-darkCard border-t border-gray-200 dark:border-gray-800 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-500 font-bold text-sm">الإجمالي المطلوب:</span>
-                    <span class="text-2xl font-black text-primary"><span id="total-val">0.000</span> ر.ع</span>
-                </div>
-                <button id="btn-submit-order" onclick="submitOrder()" disabled class="w-full bg-[#25D366] disabled:bg-gray-400 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 flex justify-center items-center gap-2">
-                    <i class="ph ph-whatsapp-logo text-2xl"></i> إرسال الطلب واتساب
-                </button>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Toasts Container -->
-    <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[70] flex flex-col gap-2 pointer-events-none w-[90%] sm:w-auto text-center"></div>
+    </main>
 
     <script>
-        // --- Configuration & Variables ---
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS_mLvfHoHl4JY7Njpl7mfVL1gXbhg_tBbGyi-NWLacXPmRmPornWAg7bqDBGdNya2Ky_haLSvuBD6j/pub?output=csv";
-        
-        let deliveryTime = "20"; 
-        let whatsappNumber = "96892018510";
-        let openingTime = "00:00"; 
-        let closingTime = "23:59"; 
+        // ==========================================
+        // هام جداً: ضع رابط الـ Web App الخاص بك هنا
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxx8EvI7tQYcQ-zMfgk-6dqxEzXfscDvTulO53-aDP9FJKk3xzugmDllYFl_tAeAfe6lA/exec"; 
 
-        const saucesUI = `
-            <option value="صوص رانش">صوص رانش</option>
-            <option value="صوص باربيكو">صوص باربيكو</option>
-            <option value="صوص كوكتيل">صوص كوكتيل</option>
-            <option value="صوص حار">صوص حار</option>
-            <option value="صوص سويت شيلي">صوص سويت شيلي</option>
-            <option value="صوص ثوميه">صوص ثوميه</option>
-            <option value="حلقات هالبينو">حلقات هالبينو</option>
-        `;
-        
-        const drinksUI = `
-            <option value="السي كولا">السي كولا</option>
-            <option value="السي تفاح">السي تفاح</option>
-            <option value="السي كولا دايت">السي كولا دايت</option>
-            <option value="السي ليمون">السي ليمون</option>
-            <option value="السي ستريم">السي ستريم</option>
-            <option value="السي برتقال">السي برتقال</option>
-            <option value="السي حمضيات">السي حمضيات</option>
-        `;
+        // بيانات تجريبية (Mock Data) للعمل بدون الرابط حتى تقوم بضبطه
+        let mockTeachers = ["أحمد محمود", "مريم علي", "محمود كمال"];
+        let mockLogs = [
+            {teacher: "أحمد محمود", hours: 2, date: "2023-10-25"},
+            {teacher: "أحمد محمود", hours: 1.5, date: "2023-10-26"},
+            {teacher: "مريم علي", hours: 3, date: "2023-10-25"},
+            {teacher: "مريم علي", hours: 2, date: "2023-10-26"},
+            {teacher: "مريم علي", hours: 1, date: "2023-10-27"}
+        ];
 
-        let menuData = {};
-        let allItemsFlat = []; // For search
-        let cart = [];
-        let selectedItem = null;
-        let currentOptQty = 1;
-        let currentCategory = ""; 
+        // التبديل بين التبويبات
+        function switchTab(tabId) {
+            document.getElementById('sec-record').classList.add('hidden');
+            document.getElementById('sec-history').classList.add('hidden');
+            document.getElementById('tab-record').className = 'py-3 px-6 tab-inactive transition-colors duration-200';
+            document.getElementById('tab-history').className = 'py-3 px-6 tab-inactive transition-colors duration-200';
 
-        // --- Core Functions ---
-        
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-gray-900 dark:bg-white text-white dark:text-black' : 'bg-red-500 text-white';
-            toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg font-bold text-sm transform transition-all duration-300 translate-y-10 opacity-0 flex items-center justify-center gap-2`;
-            toast.innerHTML = type === 'success' ? `<i class="ph ph-check-circle text-lg text-green-400 dark:text-green-600"></i> ${msg}` : `<i class="ph ph-warning-circle text-lg"></i> ${msg}`;
-            
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
-            setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).className = 'py-3 px-6 tab-active transition-colors duration-200';
 
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        }
-
-        // Init theme
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-
-        function isRestaurantOpen() {
-            if (!openingTime || !closingTime) return true;
-            const now = new Date();
-            const currentTotal = now.getHours() * 60 + now.getMinutes();
-            try {
-                const [oH, oM] = openingTime.split(':').map(Number);
-                const [cH, cM] = closingTime.split(':').map(Number);
-                const oTot = oH * 60 + oM, cTot = cH * 60 + cM;
-                if (oTot < cTot) return currentTotal >= oTot && currentTotal <= cTot;
-                else return currentTotal >= oTot || currentTotal <= cTot;
-            } catch (e) { return true; }
-        }
-
-        function formatTimeAMPM(time24) {
-            const [h, m] = time24.split(':');
-            let hours = parseInt(h);
-            const ampm = hours >= 12 ? 'م' : 'ص';
-            hours = hours % 12 || 12;
-            return `${hours}:${m} ${ampm}`;
-        }
-
-        async function fetchMenuData() {
-            try {
-                const response = await fetch(csvUrl);
-                const csvText = await response.text();
-                const rows = csvText.split('\n').map(r => r.trim()).filter(r => r);
-                
-                for(let i = 1; i < rows.length; i++) {
-                    const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
-                    if(cols.length < 3) continue;
-
-                    let cat = cols[0];
-                    let name = cols[1];
-                    let price = parseFloat(cols[2].replace(/[^\d.]/g, '')) || 0;
-
-                    if (cat === "الاعدادات") {
-                        if (name === "رقم الواتساب") whatsappNumber = cols[2];
-                        if (name === "وقت الفتح") openingTime = cols[2].trim();
-                        if (name === "وقت الغلق") closingTime = cols[2].trim();
-                        if (name === "وقت الاستلام" || name === "وقت التوصيل") {
-                            deliveryTime = cols[2].replace(/[^\d]/g, '') || "20"; 
-                            document.getElementById('asap-time-span').innerText = deliveryTime;
-                        }
-                        continue;
-                    }
-
-                    if (cat === "جبن اضافي") continue;
-
-                    const mergedCats = ["مشروبات", "باكت شيبس", "كومبو", "مياه", "خبز", "إضافات", "صوصات"];
-                    if (mergedCats.includes(cat)) cat = "اضافات وجبات";
-                    
-                    let img = cols[3] ? cols[3].replace(/[\[\]]/g, '') : '';
-                    if(name.includes("قطعة استريبس")) img = "https://i.ibb.co/Vph8WY44/mmw-638669571739251392.webp";
-
-                    let flv = cols[4] === 'نعم';
-                    let s = parseInt(cols[5]) || 0;
-                    let d = parseInt(cols[6]) || 0;
-
-                    if(name.includes("صوصات متنوعة")) s = Math.max(s, 1);
-                    if(name.includes("كومبو") || name.includes("مشروبات غازية")) d = Math.max(d, 1); 
-
-                    const itemObj = { id: i, name, price, img, flv, s, d, catOrigin: cat };
-                    
-                    if(!menuData[cat]) menuData[cat] = [];
-                    menuData[cat].push(itemObj);
-                    allItemsFlat.push(itemObj);
-                }
-
-                setupStartButton();
-
-            } catch(e) {
-                console.error(e);
-                document.getElementById('status-tag').innerText = "حدث خطأ في تحميل البيانات.";
-                document.getElementById('status-tag').className = "bg-red-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
+            if(tabId === 'history') {
+                loadLogs();
             }
         }
 
-        function setupStartButton() {
-            const btn = document.getElementById('start-btn');
-            const statusTag = document.getElementById('status-tag');
-            const startText = document.getElementById('start-text');
-            const loadIcon = document.getElementById('loading-icon');
-            
-            statusTag.classList.remove('animate-pulse');
-            
-            if (isRestaurantOpen()) {
-                startText.innerText = "تصفح المنيو 🍗";
-                btn.disabled = false;
-                statusTag.innerText = "مفتوح - طلبات استلام فقط";
-                statusTag.className = "bg-green-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
-            } else {
-                startText.innerText = "المطعم مغلق";
-                btn.disabled = true;
-                const openAMPM = formatTimeAMPM(openingTime);
-                const closeAMPM = formatTimeAMPM(closingTime);
-                statusTag.innerText = `مغلق (من ${openAMPM} إلى ${closeAMPM})`;
-                statusTag.className = "bg-red-500 text-white px-6 py-2 rounded-full font-bold text-sm mb-6";
-            }
-        }
-
-        function startApp() {
-            document.getElementById('splash-screen').classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-                document.getElementById('main-app').classList.remove('hidden');
-                
-                renderTabs();
-                if(!currentCategory) currentCategory = Object.keys(menuData)[0];
-                showCategory(currentCategory);
-            }, 500);
-        }
-
-        // --- UI Rendering ---
-
-        function renderTabs() {
-            const tabs = document.getElementById('cat-tabs');
-            tabs.innerHTML = '';
-            
-            tabs.innerHTML += `<button class="cat-tab px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap transition-colors bg-white dark:bg-darkCard text-gray-600 dark:text-gray-300" onclick="showCategory('all', this)">الكل</button>`;
-
-            Object.keys(menuData).forEach((cat) => {
-                tabs.innerHTML += `<button class="cat-tab px-5 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap transition-colors bg-white dark:bg-darkCard text-gray-600 dark:text-gray-300" onclick="showCategory('${cat}', this)">${cat}</button>`;
-            });
-
-            // Set active class on first load
-            setTimeout(() => {
-                const defaultBtn = [...document.querySelectorAll('.cat-tab')].find(b => b.innerText === currentCategory) || document.querySelectorAll('.cat-tab')[0];
-                if(defaultBtn) setActiveTab(defaultBtn);
-            }, 50);
-        }
-
-        function setActiveTab(btn) {
-            document.querySelectorAll('.cat-tab').forEach(t => {
-                t.classList.remove('bg-primary', 'text-white', 'border-primary');
-                t.classList.add('bg-white', 'dark:bg-darkCard', 'text-gray-600', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-700');
-            });
-            if(btn) {
-                btn.classList.remove('bg-white', 'dark:bg-darkCard', 'text-gray-600', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-700');
-                btn.classList.add('bg-primary', 'text-white', 'border-primary');
-                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        }
-
-        function showCategory(cat, btn = null) {
-            currentCategory = cat;
-            if(btn) setActiveTab(btn);
-            document.getElementById('searchInput').value = ''; // clear search
-            renderItems(cat === 'all' ? allItemsFlat : menuData[cat]);
-        }
-
-        function filterMenu() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('bg-primary', 'text-white')); // visual cue that we are searching
-            
-            let filtered = allItemsFlat.filter(i => i.name.toLowerCase().includes(query));
-            renderItems(filtered);
-        }
-
-        function renderItems(items) {
-            const list = document.getElementById('items-list');
-            const empty = document.getElementById('empty-search');
-            list.innerHTML = '';
-            
-            if(!items || items.length === 0) {
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
+        // جلب أسماء المدرسين من الشيت
+        async function loadTeachers() {
+            const select = document.getElementById('teacher');
+            if (API_URL === "ضع_رابط_APPS_SCRIPT_هنا") {
+                populateTeachersList(mockTeachers);
                 return;
             }
-            empty.classList.add('hidden');
-            empty.classList.remove('flex');
 
-            items.forEach((item, idx) => {
-                const isPopular = item.price > 1.5 && Math.random() > 0.6; // Simulate popular items logically
-                const popularBadge = isPopular ? `<span class="absolute top-2 right-2 bg-secondary text-black text-[10px] font-black px-2 py-1 rounded-full badge-glow z-10 flex items-center gap-1 shadow-md"><i class="ph-fill ph-star"></i> الأكثر مبيعاً</span>` : '';
+            try {
+                const response = await fetch(API_URL + "?action=getTeachers");
+                const teachers = await response.json();
+                populateTeachersList(teachers);
+            } catch (error) {
+                console.error("Error loading teachers:", error);
+                select.innerHTML = '<option value="">حدث خطأ في جلب الأسماء</option>';
+            }
+        }
 
-                list.innerHTML += `
-                    <div class="food-card bg-white dark:bg-darkCard rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden cursor-pointer active:scale-95 transition-all duration-300 fade-in-up flex flex-col group" style="animation-delay: ${idx * 0.05}s" onclick='initOptions(${JSON.stringify(item)})'>
-                        <div class="relative h-44 w-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                            ${popularBadge}
-                            <img src="${item.img || 'https://via.placeholder.com/300?text=Baraka'}" onerror="this.src='https://via.placeholder.com/300?text=Baraka'" class="food-card-img w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col justify-between relative">
-                            <h3 class="font-bold text-base text-gray-900 dark:text-white leading-tight mb-3 pr-2 border-r-2 border-primary">${item.name}</h3>
-                            <div class="flex justify-between items-center mt-auto">
-                                <span class="font-black text-primary text-lg">${item.price.toFixed(3)} <span class="text-xs font-bold text-gray-500">ر.ع</span></span>
-                                <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-red-500/30 group-hover:-translate-y-1 transition-transform"><i class="ph ph-plus font-bold text-lg"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+        function populateTeachersList(teachers) {
+            const select = document.getElementById('teacher');
+            select.innerHTML = '<option value="" disabled selected>اختر المدرس...</option>';
+            teachers.forEach(t => {
+                let opt = document.createElement('option');
+                opt.value = t;
+                opt.innerHTML = t;
+                select.appendChild(opt);
             });
         }
 
-        // --- Modals & Drawers ---
-
-        function initOptions(item) {
-            selectedItem = item;
-            currentOptQty = 1;
-            document.getElementById('opt-qty-val').innerText = currentOptQty;
-            document.getElementById('modal-title').innerText = item.name;
-            document.getElementById('modal-img').src = item.img || 'https://via.placeholder.com/400?text=Baraka';
-            updateModalPrice();
+        // إرسال الحصة للشيت
+        async function submitForm(e) {
+            e.preventDefault();
+            const teacher = document.getElementById('teacher').value;
+            const minutes = parseInt(document.getElementById('minutes').value);
             
-            let html = ``;
-            const boxClass = `bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700`;
-            const labelClass = `block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2`;
-            const selectClass = `w-full bg-white dark:bg-darkBg border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none`;
-
-            if(item.flv) {
-                html += `<div class="${boxClass}">
-                    <label class="${labelClass}">🌶️ الطعم</label>
-                    <div class="flex gap-2">
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="sel-flv" value="عادي" checked class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 peer-checked:border-primary peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20 peer-checked:text-primary transition font-bold text-sm dark:text-gray-300">عادي</div>
-                        </label>
-                        <label class="flex-1 cursor-pointer">
-                            <input type="radio" name="sel-flv" value="حار" class="peer sr-only">
-                            <div class="text-center py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-600 peer-checked:border-primary peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20 peer-checked:text-primary transition font-bold text-sm dark:text-gray-300">حار 🌶️</div>
-                        </label>
-                    </div>
-                </div>`;
-            }
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('formLoader');
             
-            if(item.name.includes("توستر") || item.name.includes("تربل توستر")) {
-                html += `<div class="${boxClass} border-secondary">
-                    <label class="${labelClass}">🧀 إضافة جبن (اختياري)</label>
-                    <select id="sel-cheese" onchange="updateModalPrice()" class="${selectClass}">
-                        <option value="0">بدون إضافة</option>
-                        <option value="0.100">شريحة جبن (+0.100 ر.ع)</option>
-                        <option value="0.200">شريحتين جبن (+0.200 ر.ع)</option>
-                        <option value="0.300">3 شرائح جبن (+0.300 ر.ع)</option>
-                    </select>
-                </div>`;
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+
+            if (API_URL === "ضع_رابط_APPS_SCRIPT_هنا") {
+                // محاكاة الإرسال
+                setTimeout(() => {
+                    const hours = (minutes / 60).toFixed(2);
+                    mockLogs.push({teacher: teacher, hours: hours, date: new Date().toISOString().split('T')[0]});
+                    finishSubmit();
+                }, 1000);
+                return;
             }
 
-            if(item.d > 0) {
-                for(let i=1; i<=item.d; i++) {
-                    html += `<div class="${boxClass}"><label class="${labelClass}">🥤 مشروب ${item.d > 1 ? i : ''}</label><select class="sel-drink ${selectClass}">${drinksUI}</select></div>`;
-                }
-            }
-
-            if(item.s > 0) {
-                for(let i=1; i<=item.s; i++) {
-                    html += `<div class="${boxClass}"><label class="${labelClass}">🧂 صوص ${item.s > 1 ? i : ''}</label><select class="sel-sauce ${selectClass}">${saucesUI}</select></div>`;
-                }
-            }
-            
-            html += `<div class="${boxClass}">
-                <label class="${labelClass}">📝 ملاحظات خاصة (بدون طماطم، الخ...)</label>
-                <textarea id="sel-note" rows="2" class="w-full bg-white dark:bg-darkBg border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary dark:text-white outline-none resize-none"></textarea>
-            </div>`;
-            
-            document.getElementById('options-render').innerHTML = html;
-            
-            // Open Modal
-            const modal = document.getElementById('item-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.drawer-overlay').classList.remove('opacity-0');
-                modal.querySelector('.drawer-content').classList.remove('translate-y-full', 'opacity-0');
-            }, 10);
-        }
-
-        function closeItemModal() {
-            const modal = document.getElementById('item-modal');
-            modal.querySelector('.drawer-overlay').classList.add('opacity-0');
-            modal.querySelector('.drawer-content').classList.add('translate-y-full', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function changeOptQty(change) {
-            currentOptQty += change;
-            if(currentOptQty < 1) currentOptQty = 1;
-            document.getElementById('opt-qty-val').innerText = currentOptQty;
-            updateModalPrice();
-        }
-
-        function updateModalPrice() {
-            if(!selectedItem) return;
-            const cheesePrice = parseFloat(document.getElementById('sel-cheese')?.value || 0);
-            const total = (selectedItem.price + cheesePrice) * currentOptQty;
-            document.getElementById('modal-price-total').innerText = total.toFixed(3);
-        }
-
-        // --- Cart Management ---
-
-        function addItemToCart() {
-            const cheeseSelect = document.getElementById('sel-cheese');
-            const cheesePrice = cheeseSelect ? parseFloat(cheeseSelect.value) : 0;
-            const cheeseText = cheeseSelect && cheesePrice > 0 ? cheeseSelect.options[cheeseSelect.selectedIndex].text : '';
-
-            const finalItemPrice = selectedItem.price + cheesePrice;
-            const flvRadio = document.querySelector('input[name="sel-flv"]:checked');
-
-            cart.push({
-                id: Date.now(), // unique ID for removal
-                name: selectedItem.name,
-                qty: currentOptQty,
-                unitPrice: finalItemPrice,
-                totalPrice: finalItemPrice * currentOptQty,
-                flv: flvRadio ? flvRadio.value : '',
-                cheeseInfo: cheeseText,
-                sauces: Array.from(document.querySelectorAll('.sel-sauce')).map(s => s.value),
-                drinks: Array.from(document.querySelectorAll('.sel-drink')).map(d => d.value),
-                note: document.getElementById('sel-note').value,
-                img: selectedItem.img
-            });
-            
-            updateCartUI();
-            closeItemModal();
-            showToast('تم الإضافة للسلة بنجاح 😋');
-
-            // Fire Confetti! 🎉
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.8 },
-                colors: ['#d32f2f', '#ffc107', '#ffffff'],
-                zIndex: 100
-            });
-        }
-
-        function updateCartUI() {
-            const count = cart.reduce((sum, item) => sum + item.qty, 0);
-            const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-            
-            // Update FAB
-            const fab = document.getElementById('fab-cart');
-            document.getElementById('fab-count').innerText = count;
-            document.getElementById('fab-total').innerText = total.toFixed(3) + ' ر.ع';
-            
-            if(count > 0) fab.classList.remove('hidden');
-            else fab.classList.add('hidden');
-
-            // Update Drawer logic (if open)
-            renderCartItems();
-        }
-
-        function openCart() {
-            renderCartItems();
-            const modal = document.getElementById('cart-drawer');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.drawer-overlay').classList.remove('opacity-0');
-                modal.querySelector('.drawer-content').classList.remove('-translate-x-full', 'opacity-0');
-            }, 10);
-        }
-
-        function closeCart() {
-            const modal = document.getElementById('cart-drawer');
-            modal.querySelector('.drawer-overlay').classList.add('opacity-0');
-            modal.querySelector('.drawer-content').classList.add('-translate-x-full', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function renderCartItems() {
-            const display = document.getElementById('cart-display');
-            const form = document.getElementById('checkout-form');
-            const submitBtn = document.getElementById('btn-submit-order');
-            
-            display.innerHTML = '';
-            let total = 0;
-            
-            if(cart.length === 0) {
-                display.innerHTML = `<div class="text-center py-10 text-gray-400"><i class="ph ph-shopping-cart text-5xl mb-2 opacity-50"></i><p>السلة فارغة</p></div>`;
-                form.classList.add('hidden');
-                submitBtn.disabled = true;
-            } else {
-                form.classList.remove('hidden');
-                submitBtn.disabled = false;
-                
-                cart.forEach((item) => {
-                    total += item.totalPrice;
-                    
-                    let detailsHTML = '';
-                    if(item.flv) detailsHTML += `<span class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">${item.flv}</span>`;
-                    if(item.cheeseInfo) detailsHTML += `<span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-1.5 py-0.5 rounded text-[10px]">🧀 جبن</span>`;
-                    if(item.sauces.length) detailsHTML += `<p class="text-[11px] text-gray-500 truncate w-full mt-1">🧂 ${item.sauces.join('، ')}</p>`;
-                    if(item.drinks.length) detailsHTML += `<p class="text-[11px] text-gray-500 truncate w-full">🥤 ${item.drinks.join('، ')}</p>`;
-                    if(item.note) detailsHTML += `<p class="text-[11px] text-gray-400 italic mt-1 max-w-[180px] truncate">"${item.note}"</p>`;
-
-                    display.innerHTML += `
-                        <div class="bg-white dark:bg-darkCard p-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-3 relative">
-                            <button onclick="removeFromCart(${item.id})" class="absolute top-2 left-2 text-red-400 hover:text-red-600 p-1"><i class="ph ph-trash"></i></button>
-                            <img src="${item.img || 'https://via.placeholder.com/60'}" class="w-16 h-16 rounded-xl object-cover bg-gray-100">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-sm dark:text-white leading-tight pr-6">${item.name}</h4>
-                                <div class="flex flex-wrap gap-1 mt-1 mb-2">${detailsHTML}</div>
-                                <div class="flex justify-between items-center mt-auto">
-                                    <span class="font-bold text-primary text-sm">${item.totalPrice.toFixed(3)} ر.ع</span>
-                                    <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg dark:text-white">العدد: ${item.qty}</span>
-                                </div>
-                            </div>
-                        </div>`;
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ teacher, minutes })
                 });
-            }
-            document.getElementById('total-val').innerText = total.toFixed(3);
-        }
-
-        function removeFromCart(id) {
-            cart = cart.filter(i => i.id !== id);
-            updateCartUI();
-        }
-
-        // --- Checkout & Time ---
-
-        function generateTimeOptions() {
-            const select = document.getElementById('scheduled-time-select');
-            select.innerHTML = '';
-            const now = new Date();
-            let currentMins = now.getHours() * 60 + now.getMinutes();
-            let startMins = Math.ceil((currentMins + 15) / 15) * 15; 
-            
-            // تحويل أوقات العمل من جوجل شيت إلى دقائق للمقارنة
-            let oTot = 0, cTot = 1440;
-            try {
-                const [oH, oM] = openingTime.split(':').map(Number);
-                const [cH, cM] = closingTime.split(':').map(Number);
-                oTot = oH * 60 + oM;
-                cTot = cH * 60 + cM;
-            } catch(e) {}
-
-            let validOptionsCount = 0;
-            
-            // البحث عن أقرب 16 وقت متاح ضمن ساعات العمل
-            for(let i = 0; i < 48; i++) { 
-                let m = startMins + (i * 15);
-                let timeOfDay = m % 1440; // تحويل الوقت لنظام 24 ساعة كحد أقصى
-                
-                // التحقق مما إذا كان الوقت المولد يقع ضمن ساعات العمل
-                let isValid = false;
-                if (oTot < cTot) {
-                    isValid = timeOfDay >= oTot && timeOfDay <= cTot;
-                } else {
-                    // في حال كان وقت الإغلاق بعد منتصف الليل (مثال: يفتح 10 ص ويغلق 2 ص)
-                    isValid = timeOfDay >= oTot || timeOfDay <= cTot;
+                const result = await response.json();
+                if(result.status === 'success') {
+                    finishSubmit();
                 }
-
-                // إذا كان الوقت صالحاً (المطعم مفتوح فيه)، أضفه للقائمة
-                if (isValid) {
-                    let h = Math.floor(timeOfDay / 60);
-                    let mins = timeOfDay % 60;
-                    let timeStr = formatTimeAMPM(`${h}:${mins < 10 ? '0'+mins : mins}`);
-                    select.innerHTML += `<option value="${timeStr}">${timeStr}</option>`;
-                    validOptionsCount++;
-                }
-                
-                if (validOptionsCount >= 16) break; // نكتفي بـ 16 خيار كحد أقصى
-            }
-
-            // في حال عدم توفر أوقات (مثلاً المطعم سيغلق بعد 5 دقائق)
-            if (validOptionsCount === 0) {
-                select.innerHTML = '<option value="">لا توجد أوقات متاحة للجدولة حالياً</option>';
+            } catch (error) {
+                alert("حدث خطأ أثناء حفظ البيانات.");
+                btn.style.display = 'block';
+                loader.style.display = 'none';
             }
         }
 
-        function toggleTimeInput() {
-            const type = document.querySelector('input[name="pickup-time-type"]:checked').value;
-            const select = document.getElementById('scheduled-time-select');
-            if (type === 'scheduled') {
-                select.classList.remove('hidden');
-                generateTimeOptions();
-            } else {
-                select.classList.add('hidden');
-            }
+        function finishSubmit() {
+            document.getElementById('minutes').value = '';
+            document.getElementById('teacher').value = '';
+            
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('formLoader').style.display = 'none';
+            
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 3000);
         }
 
-        function submitOrder() {
-            if(!isRestaurantOpen()) {
-                showToast(`عذراً، انتهت أوقات عمل المطعم للتو.`, 'error');
+        // جلب وتجميع وعرض السجلات
+        async function loadLogs() {
+            const container = document.getElementById('logsContainer');
+            const loader = document.getElementById('historyLoader');
+            
+            container.innerHTML = '';
+            loader.style.display = 'block';
+
+            let dataToProcess = [];
+
+            if (API_URL === "ضع_رابط_APPS_SCRIPT_هنا") {
+                dataToProcess = mockLogs;
+                setTimeout(() => renderGroupedLogs(dataToProcess), 800);
                 return;
             }
 
-            const custName = document.getElementById('customer-name').value.trim();
-            const branch = document.getElementById('branch-select').value;
-            
-            if(!custName) return showToast("يرجى كتابة اسم العميل أولاً.", 'error');
-            if(!branch) return showToast("يرجى اختيار فرع الاستلام.", 'error');
-
-            let finalTime = `أقرب وقت (خلال ${deliveryTime} دقيقة)`;
-            if (document.querySelector('input[name="pickup-time-type"]:checked').value === 'scheduled') {
-                const selectedTime = document.getElementById('scheduled-time-select').value;
-                if(!selectedTime) return showToast("عفواً، لا يوجد وقت متاح للجدولة حالياً.", 'error');
-                finalTime = `الساعة ${selectedTime}`;
+            try {
+                const response = await fetch(API_URL + "?action=getLogs");
+                dataToProcess = await response.json();
+                renderGroupedLogs(dataToProcess);
+            } catch (error) {
+                console.error("Error loading logs:", error);
+                container.innerHTML = '<p class="text-red-500">حدث خطأ في تحميل السجلات.</p>';
+                loader.style.display = 'none';
             }
-
-            const pNotes = document.getElementById('pickup-notes').value.trim();
-
-            let text = `*طلب جديد - مطعم البركة 🍗*\n`;
-            text += `🔴 *طلب استلام من الفرع*\n`;
-            text += `👤 العميل: ${custName}\n`;
-            text += `📍 الفرع: ${branch}\n`;
-            text += `⏱️ وقت الاستلام: *${finalTime}*\n`;
-            if(pNotes) text += `🚗 ملاحظات (السيارة): ${pNotes}\n`;
-            text += `\n-- التفاصيل --\n`;
-            
-            cart.forEach(i => {
-                text += `▪️ *${i.name}* (العدد: ${i.qty})\n`;
-                if(i.flv) text += `   - الطعم: ${i.flv}\n`;
-                if(i.cheeseInfo) text += `   - الجبن: ${i.cheeseInfo}\n`;
-                if(i.sauces.length) text += `   - صوص: ${i.sauces.join('، ')}\n`;
-                if(i.drinks.length) text += `   - مشروب: ${i.drinks.join('، ')}\n`;
-                if(i.note) text += `   - ملاحظة: ${i.note}\n`;
-                text += `   - السعر: ${i.totalPrice.toFixed(3)} ر.ع\n\n`;
-            });
-            text += `====================\n💰 *الإجمالي: ${document.getElementById('total-val').innerText} ر.ع*\n====================`;
-            
-            showToast('جاري تحويلك للواتساب لإتمام الطلب... 🚀');
-            setTimeout(() => {
-                window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`);
-            }, 1000);
         }
 
-        // Init
-        fetchMenuData();
+        function renderGroupedLogs(logs) {
+            const container = document.getElementById('logsContainer');
+            document.getElementById('historyLoader').style.display = 'none';
+
+            if(logs.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-4">لا توجد حصص مسجلة بعد.</p>';
+                return;
+            }
+
+            // تجميع البيانات بناءً على طلبك
+            const grouped = {};
+            logs.forEach(log => {
+                if(!grouped[log.teacher]) {
+                    grouped[log.teacher] = { classes: [], totalHours: 0 };
+                }
+                grouped[log.teacher].classes.push(log);
+                grouped[log.teacher].totalHours += parseFloat(log.hours);
+            });
+
+            // إنشاء العرض (HTML) لكل مدرس
+            for (const [teacherName, data] of Object.entries(grouped)) {
+                
+                let classesHtml = '';
+                data.classes.forEach(c => {
+                    const h = parseFloat(c.hours);
+                    const m = Math.round(h * 60);
+                    classesHtml += `
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                            <span class="text-sm text-gray-500"><i class="far fa-calendar-alt ml-1"></i> ${c.date}</span>
+                            <span class="text-sm font-semibold bg-blue-50 text-blue-700 px-2 py-1 rounded">${m} دقيقة (${h} ساعة)</span>
+                        </div>
+                    `;
+                });
+
+                const card = `
+                    <div class="border rounded-lg overflow-hidden border-gray-200">
+                        <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-gray-800"><i class="fas fa-user-circle text-gray-400 ml-2"></i>${teacherName}</h3>
+                            <div class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-bold">
+                                إجمالي: ${data.classes.length} حصص | ${(data.totalHours).toFixed(2)} ساعة
+                            </div>
+                        </div>
+                        <div class="px-4 py-2">
+                            ${classesHtml}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            }
+        }
+
+        // تشغيل الوظائف عند فتح الصفحة
+        window.onload = () => {
+            loadTeachers();
+        };
     </script>
 </body>
 </html>
